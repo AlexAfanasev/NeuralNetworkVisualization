@@ -6,6 +6,9 @@ data <- Boston
 index <- sample(1:nrow(data), round(0.75*nrow(data)))
 train <- data[index,]
 test <- data[-index,]
+
+
+# TODO: add this to our package :)
 maxs <- apply(data, 2, max)
 mins <- apply(data, 2, min)
 # scale for neuralnet
