@@ -47,19 +47,38 @@ pdp_class_wrapper(c("Sepal.Length","Sepal.Width"), iris.train, iris.net, "Specie
 pdp_class_wrapper(predictor = "all",iris.train, iris.net, "Species")
 pdp_class_wrapper(predictor = c("all", "Sepal.Length"),iris.train,iris.net, "Species")
 
+### test for binary data ###
+library(faraway)
+library(DMwR)
+str(pima)
+pima$glucose[pima$glucose == 0] <- NA
+pima$diastolic[pima$diastolic == 0] <- NA
+pima$triceps[pima$triceps == 0] <- NA
+pima$insulin[pima$insulin == 0] <- NA
+pima$bmi[pima$bmi == 0] <- NA
+sapply(pima, function(x) sum(is.na(x)))
+pima <- pima[-manyNAs(pima),]
+pima.clean <- knnImputation(pima, k = 10)
+pima.clean$test <- as.factor(pima.clean$test)
+levels(pima.clean$test) <- c("Negative", "Positive")
+scale01 <- function(x){
+  (x - min(x)) / (max(x) - min(x))
+}
 
+pima2 <- pima.clean
+pima2[,9] <- unclass(pima2[,9])
 
-# TODO: Finish test for binary data --> and add dataset to repository
-### test for binary data####
-#setwd("C:/Users/Jacky/Documents/University/G?ttingen/SS2019/Statistical Programming with R")
-#dataset <- read.csv("creditset.csv")
-## extract a set to train the NN
-#trainset <- dataset[1:800, ]
+pima.norm <- pima2 %>%
+             mutate_all(scale01)
 
-## select the test set
-#testset <- dataset[801:2000, ]
-#creditnet <- neuralnet(default10yr ~ LTI + age, trainset, hidden = 2,
-#                       linear.output = FALSE, threshold = 0.1)
+pima.size <- floor(0.75 * nrow(pima.norm))
+train <- sample(seq_len(nrow(pima.norm)), size = pima.size)
 
-#pdp_wrapper("LTI", trainset, creditnet, "default10yr")
-#pdp_wrapper(c("LTI", "age"), trainset, creditnet, "default10yr")
+pima.train.n <- pima.norm[train, ]
+pima.test.n <- pima.norm[-train, ]
+pima.nn <- neuralnet(test ~ pregnant + glucose + diastolic + triceps + insulin + bmi + diabetes + age, 
+                     hidden = 4, data = pima.train.n, linear.output = TRUE)
+
+plot_partial_dependencies_numeric("glucose",pima.train.n, pima.nn)
+plot_partial_dependencies_numeric(c("glucose","pregnant"),pima.train.n, pima.nn)
+plot_partial_dependencies_numeric("all", pima.train.n, pima.nn)
