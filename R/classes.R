@@ -84,7 +84,7 @@ plot_partial_dependencies_numeric <- function(predictor = "all",
             predictor <- colnames(train)[pred_cond]
             pd <- predictor %>%
                   map(~ prepare_numeric_data(
-                      .x, train_, neural_network)) %>%
+                      .x, train, neural_network)) %>%
                   map(~ gather(.x,"predictor", "values", 1)) %>%
                   bind_rows()
             pd <- pd %>%
