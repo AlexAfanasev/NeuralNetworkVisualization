@@ -40,7 +40,6 @@ prepare_numeric_data <- function(predictor, train, neural_network) {
     return(partial_dependence)
 }
 
-prepare_numeric_data()
 #' Plot partial dependencies for the case of numeric dependenant variable
 #' in the neural network
 #'
