@@ -1,84 +1,66 @@
-# load the package before running the examples !
+library(NeuralNetworkVisualization)
 
-
-### sample data ####
+# Example for Plotting with numerical dependent variable
+library(MASS)
 data <- Boston
 index <- sample(1:nrow(data), round(0.75*nrow(data)))
 train <- data[index,]
-test <- data[-index,]
 
+set.seed(1)
+model <- NeuralNetwork(medv ~ ., data = train, layers = c(5, 3),
+                       scale = TRUE, linear.output = TRUE)
 
-# TODO: add this to our package :)
-maxs <- apply(data, 2, max)
-mins <- apply(data, 2, min)
-# scale for neuralnet
-scaled <- as.data.frame(scale(data, center = mins, scale = maxs - mins))
-train_ <- scaled[index,]
-test_ <- scaled[-index,]
-n <- names(train_)
-# formula
-f <- as.formula(paste("medv ~", paste(n[!n %in% "medv"], collapse = " + ")))
-# construct nn
-nn <- neuralnet(f,data = train_,hidden = c(5,3),linear.output = T)
+plot_partial_dependencies(model)
+plot_partial_dependencies(model, predictors = "crim")
+plot_partial_dependencies(model, predictors = c("crim", "age"))
 
-#### test for pdp_wrapper ####
-plot_partial_dependencies_numeric(
-    predictor = "all", train_, nn)
-plot_partial_dependencies_numeric(c("crim","indus", "nox"), train_, nn)
-plot_partial_dependencies_numeric("crim", train_, nn)
-plot_partial_dependencies_numeric(c("crim","all"), train_, nn)
-
-### categorical data ####
-data(iris)
+# Example for Plotting with categorical dependent variable
+library(datasets)
+data("iris")
 iris$setosa <- iris$Species=="setosa"
-iris$virginica <- iris$Species == "virginica"
+iris$setosa <- iris$setosa + 0
 iris$versicolor <- iris$Species == "versicolor"
-iris.train.idx <- sample(x = nrow(iris), size = nrow(iris)*0.5)
-iris.train <- iris[iris.train.idx,]
-iris.valid <- iris[-iris.train.idx,]
-iris.net <- neuralnet(setosa+versicolor+virginica ~
-                          Sepal.Length + Sepal.Width + Petal.Length + Petal.Width,
-                      data=iris.train, hidden=c(10,10), rep = 5, err.fct = "ce",
-                      linear.output = F, lifesign = "minimal", stepmax = 1000000,
-                      threshold = 0.001)
+iris$versicolor <- iris$versicolor + 0
+iris$virginica <- iris$Species == "virginica"
+iris$virginica <- iris$virginica + 0
+index <- sample(x = nrow(iris), size = nrow(iris)*0.5)
+train_test <- iris[index,]
+train_model <- train_test[, !(names(train_test) %in%
+                                  c("setosa", "versicolor", "virginica"))]
+set.seed(1)
+model <- NeuralNetwork(
+    Species ~ Sepal.Length + Sepal.Width + Petal.Length + Petal.Width,
+    data = train_model, layers = c(10, 10), rep = 5, err.fct = "ce",
+    linear.output = FALSE, lifesign = "minimal", stepmax = 1000000,
+    threshold = 0.001)
 
-pdp_class_wrapper("Sepal.Length", iris.train, iris.net, "Species")
-pdp_class_wrapper(c("Sepal.Length","Sepal.Width"), iris.train, iris.net, "Species")
-pdp_class_wrapper(predictor = "all",iris.train, iris.net, "Species")
-pdp_class_wrapper(predictor = c("all", "Sepal.Length"),iris.train,iris.net, "Species")
+plot_partial_dependencies(model)
+plot_partial_dependencies(model, predictors = "Sepal.Length")
+plot_partial_dependencies(model, predictors = c("Sepal.Length", "Petal.Length"))
 
-### test for binary data ###
+# Example for Plotting with binary dependent variable
 library(faraway)
 library(DMwR)
-str(pima)
 pima$glucose[pima$glucose == 0] <- NA
 pima$diastolic[pima$diastolic == 0] <- NA
 pima$triceps[pima$triceps == 0] <- NA
 pima$insulin[pima$insulin == 0] <- NA
 pima$bmi[pima$bmi == 0] <- NA
-sapply(pima, function(x) sum(is.na(x)))
 pima <- pima[-manyNAs(pima),]
-pima.clean <- knnImputation(pima, k = 10)
-pima.clean$test <- as.factor(pima.clean$test)
-levels(pima.clean$test) <- c("Negative", "Positive")
-scale01 <- function(x){
-  (x - min(x)) / (max(x) - min(x))
-}
+pima <- knnImputation(pima, k = 10)
+pima$test <- as.factor(pima$test)
+levels(pima$test) <- c("Negative", "Positive")
+pima[, 9] <- unclass(pima[, 9])
+pima_size <- floor(0.75 * nrow(pima))
+index <- sample(seq_len(nrow(pima)), size = pima_size)
+train <- pima[index, ]
 
-pima2 <- pima.clean
-pima2[,9] <- unclass(pima2[,9])
+set.seed(1)
+model <- NeuralNetwork(test ~ pregnant + glucose + diastolic + triceps +
+                           insulin + bmi + diabetes + age,
+                       data = train, layers = 4,
+                       scale = TRUE, linear.output = TRUE)
 
-pima.norm <- pima2 %>%
-             mutate_all(scale01)
-
-pima.size <- floor(0.75 * nrow(pima.norm))
-train <- sample(seq_len(nrow(pima.norm)), size = pima.size)
-
-pima.train.n <- pima.norm[train, ]
-pima.test.n <- pima.norm[-train, ]
-pima.nn <- neuralnet(test ~ pregnant + glucose + diastolic + triceps + insulin + bmi + diabetes + age, 
-                     hidden = 4, data = pima.train.n, linear.output = TRUE)
-
-plot_partial_dependencies_numeric("glucose",pima.train.n, pima.nn)
-plot_partial_dependencies_numeric(c("glucose","pregnant"),pima.train.n, pima.nn)
-plot_partial_dependencies_numeric("all", pima.train.n, pima.nn)
+plot_partial_dependencies(model)
+plot_partial_dependencies(model, predictors = "glucose")
+plot_partial_dependencies(model, predictors = c("pregnant", "diastolic"))

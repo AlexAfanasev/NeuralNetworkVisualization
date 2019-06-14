@@ -1,5 +1,4 @@
-test_that("Creating NeuralNetwork for numerical dependent variable
-          works", {
+test_that("Creating NeuralNetwork for numerical dependent variable works", {
     library(MASS)
     data <- Boston
     index <- sample(1:nrow(data), round(0.75*nrow(data)))
@@ -24,10 +23,10 @@ test_that("Creating NeuralNetwork for numerical dependent variable
     expect_equal(model$neural_network$model.list$variables,
                  nn$model.list$variables)
     expect_equal(model$type, "numerical")
+    expect_equal(model$dependent, "medv")
 })
 
-test_that("Creating NeuralNetwork for categorical dependent variable
-          works", {
+test_that("Creating NeuralNetwork for categorical dependent variable works", {
     library(datasets)
     data("iris")
     iris$setosa <- iris$Species=="setosa"
@@ -37,23 +36,24 @@ test_that("Creating NeuralNetwork for categorical dependent variable
     iris$virginica <- iris$Species == "virginica"
     iris$virginica <- iris$virginica + 0
     index <- sample(x = nrow(iris), size = nrow(iris)*0.5)
-    train <- iris[index,]
+    train_test <- iris[index,]
 
     set.seed(1)
     nn <- neuralnet(
         setosa + versicolor + virginica ~
         Sepal.Length + Sepal.Width + Petal.Length + Petal.Width,
-        data = train, hidden = c(10, 10), rep = 5, err.fct = "ce",
-        linear.output = F, lifesign = "minimal", stepmax = 1000000,
+        data = train_test, hidden = c(10, 10), rep = 5, err.fct = "ce",
+        linear.output = FALSE, lifesign = "minimal", stepmax = 1000000,
         threshold = 0.001)
 
-    train <- train[, !(names(train) %in% c("setosa", "versicolor", "virginica"))]
+    train_model <- train_test[, !(names(train_test) %in%
+                                      c("setosa", "versicolor", "virginica"))]
 
     set.seed(1)
     model <- NeuralNetwork(
         Species ~ Sepal.Length + Sepal.Width + Petal.Length + Petal.Width,
-        data = train, layers = c(10, 10), rep = 5, err.fct = "ce",
-        linear.output = F, lifesign = "minimal", stepmax = 1000000,
+        data = train_model, layers = c(10, 10), rep = 5, err.fct = "ce",
+        linear.output = FALSE, lifesign = "minimal", stepmax = 1000000,
         threshold = 0.001)
 
     expect_equal(model$neural_network$result.matrix, nn$result.matrix)
@@ -64,6 +64,7 @@ test_that("Creating NeuralNetwork for categorical dependent variable
     expect_equal(model$neural_network$model.list$variables,
                nn$model.list$variables)
     expect_equal(model$type, "categorical")
+    expect_equal(model$dependent, "Species")
 })
 
 test_that("Creating neural network for binary dependent variable works", {
@@ -94,8 +95,8 @@ test_that("Creating neural network for binary dependent variable works", {
                     hidden = 4, data = scaled, linear.output = TRUE)
 
     set.seed(1)
-    model <- NeuralNetwork(test ~ pregnant + glucose + diastolic + triceps + insulin +
-                               bmi + diabetes + age,
+    model <- NeuralNetwork(test ~ pregnant + glucose + diastolic + triceps +
+                               insulin + bmi + diabetes + age,
                            data = train, layers = 4,
                            scale = TRUE, linear.output = TRUE)
 
@@ -106,4 +107,5 @@ test_that("Creating neural network for binary dependent variable works", {
     expect_equal(model$neural_network$model.list$variables,
                  nn$model.list$variables)
     expect_equal(model$type, "numerical")
+    expect_equal(model$dependent, "test")
 })
