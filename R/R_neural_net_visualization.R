@@ -34,6 +34,7 @@
 #' }
 #' @import tidyverse
 #' @import neuralnet
+#' @import rlang
 #' @name plot_partial_dependencies
 #' @export
 plot_partial_dependencies <- function (neural_net, predictors = "all") {
