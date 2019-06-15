@@ -4,7 +4,7 @@ prepare_data <- function (neural_net, predictor) {
     # dplyr:: is required as tidyverse and neuralnet share functions
     grid_predictor <- dplyr::select(neural_net$neural_network$data, !!predictor)
     grid_input <- dplyr::select(neural_net$neural_network$data, -!!predictor)
-    grid <- tidyr::crossing(grid_predictor, grid_input)
+    grid <- crossing(grid_predictor, grid_input)
     if (neural_net$type == "numerical") {
         return(prepare_data_numeric(grid, predictor, neural_net))
     } else {

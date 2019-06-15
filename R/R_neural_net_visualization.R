@@ -11,6 +11,7 @@
 #' @return Created figure
 #'
 #' @examples
+#' \dontrun{
 #' # Example: Numeric or Binary
 #' library(MASS)
 #' neural_network <- NeuralNetwork(f = "medv ~ .", data = Boston,
@@ -30,7 +31,7 @@
 #' plot_partial_dependencies(neural_network,
 #'                           predictors = c("Sepal.Length", "Petal.Length"))
 #' plot_partial_dependencies(neural_network)
-#'
+#' }
 #' @import tidyverse
 #' @import neuralnet
 #' @name plot_partial_dependencies
@@ -54,7 +55,7 @@ get_predictors <- function (neural_net, predictors) {
         }
     } else {
         if (predictors == "all") {
-            return(dplyr::syms(neural_net$neural_network$model.list$variables))
+            return(syms(neural_net$neural_network$model.list$variables))
         }
     }
     if (any(!(predictors %in%
@@ -62,7 +63,7 @@ get_predictors <- function (neural_net, predictors) {
         stop("Please specify predictors that where used in the
              NeuralNetwork!")
     } else {
-        return(dplyr::syms(predictors))
+        return(syms(predictors))
     }
 }
 

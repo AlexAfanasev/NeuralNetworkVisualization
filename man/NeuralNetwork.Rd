@@ -31,6 +31,7 @@ This is a S3 class. It defines a neural network and the generic plot function
 is overwritten to handle the NeuralNetwork class as input.
 }
 \examples{
+\dontrun{
 # Example: Numeric or Binary
 library(MASS)
 neural_network <- NeuralNetwork(f = "medv ~ .", data = Boston,
@@ -43,5 +44,5 @@ neural_network <- NeuralNetwork(f = "Species ~ .", data = iris,
                                 layers = c(10, 10), rep = 5, err.fct = "ce",
                                 linear.output = FALSE, lifesign = "minimal",
                                 stepmax = 1000000, threshold = 0.001)
-
+}
 }
