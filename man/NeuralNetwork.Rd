@@ -20,15 +20,16 @@ categorical, binary and numerical data.}
 \code{\link[neuralnet]{neuralnet}}}
 }
 \value{
-NeuralNetwork class containing the training data, the neural network
-  and  the type of the dependent variable.
+NeuralNetwork class containing the neuralnet, type of dependent
+  variable, name of dependent variable, set layers and the additional
+  parameters provided.
 }
 \description{
 \code{NeuralNetwork} Returns the trained neural network
 }
 \details{
-This is a S3 class. It defines a neural network and the generic plot function
-is overwritten to handle the NeuralNetwork class as input.
+This is a S3 class. It defines a neural network and has the
+plot_partial_dependencies method for plotting marginal effects.
 }
 \examples{
 \dontrun{

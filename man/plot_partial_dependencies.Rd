@@ -5,7 +5,8 @@
 \title{Function for plotting the partial dependencies of the created NeuralNetwork
 in R window.}
 \usage{
-plot_partial_dependencies(neural_net, predictors = "all")
+plot_partial_dependencies(neural_net, predictors = "all", probs = c(0,
+  0))
 }
 \arguments{
 \item{neural_net}{The NeuralNetwork instance, see:
@@ -13,13 +14,16 @@ plot_partial_dependencies(neural_net, predictors = "all")
 
 \item{predictors}{The predictors of the neural network for which to plot the
 partial dependencies}
+
+\item{probs}{Vector of 2 probabilities for the confidence intervals.
+If booth are 0 intervals will not be plotted.}
 }
 \value{
 Created figure
 }
 \description{
 \code{plot_partial_dependencies} Plots the partial dependencies for
-  the specified predictors
+  the specified predictors.
 }
 \examples{
 \dontrun{
@@ -28,9 +32,10 @@ library(MASS)
 neural_network <- NeuralNetwork(f = "medv ~ .", data = Boston,
                                 layers = c(5, 3), scale = TRUE,
                                 linear.output = TRUE)
-plot_partial_dependencies(neural_network, predictors = "crim")
+plot_partial_dependencies(neural_network, predictors = "crim",
+                          probs = c(0.2, 0.8))
 plot_partial_dependencies(neural_network, predictors = c("crim", "age"))
-plot_partial_dependencies(neural_network)
+plot_partial_dependencies(neural_network, probs = c(0.1, 0.9))
 
 # Example: Categoric
 library(datasets)

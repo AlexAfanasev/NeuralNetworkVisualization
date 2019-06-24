@@ -2,9 +2,9 @@
 #'
 #' \code{NeuralNetwork} Returns the trained neural network
 #'
-#' This is a S3 class. It defines a neural network and the generic plot function
-#' is overwritten to handle the NeuralNetwork class as input.
-
+#' This is a S3 class. It defines a neural network and has the
+#' plot_partial_dependencies method for plotting marginal effects.
+#'
 #' @param ... further parameters for neuralnet, see:
 #'   \code{\link[neuralnet]{neuralnet}}
 #' @param f A formula representing the model that should be fitted. Handles
@@ -14,8 +14,9 @@
 #' @param scale Boolean representing if the data should be scaled or not
 
 #'
-#' @return NeuralNetwork class containing the training data, the neural network
-#'   and  the type of the dependent variable.
+#' @return NeuralNetwork class containing the neuralnet, type of dependent
+#'   variable, name of dependent variable, set layers and the additional
+#'   parameters provided.
 #'
 #' @examples
 #' \dontrun{
@@ -32,8 +33,8 @@
 #'                                 linear.output = FALSE, lifesign = "minimal",
 #'                                 stepmax = 1000000, threshold = 0.001)
 #' }
-#' @import neuralnet
-#' @import nnet
+#' @importFrom  neuralnet neuralnet
+#' @importFrom  nnet class.ind
 #' @name NeuralNetwork
 #' @export
 NeuralNetwork <- function (f, data, layers, scale = FALSE, ...) {
@@ -48,11 +49,12 @@ NeuralNetwork <- function (f, data, layers, scale = FALSE, ...) {
                                          independent, ...)
     return(structure(
         list(neural_network = neural_network,
-             type = type, dependent = dependent), class = "NeuralNetwork"))
+             type = type, dependent = dependent, f = f, layers = layers,
+             additional = list(...)), class = "NeuralNetwork"))
 }
 
+#' Returrns the type for the dependent variable (numerical or categorical).
 #' @keywords internal
-#' Returrns the type for the dependent variable (numerical or categorical)
 get_type <- function (data) {
     if (is.factor(data)) {
         return("categorical")
@@ -64,8 +66,8 @@ get_type <- function (data) {
 
 }
 
+#' Scales the data.
 #' @keywords internal
-#' Scales the data
 scale_data <- function(data){
     maxs <- apply(data, 2, max)
     mins <- apply(data, 2, min)
@@ -74,8 +76,8 @@ scale_data <- function(data){
     return(data)
 }
 
+#' Fits neural network for either numerical or categorical dependent variable.
 #' @keywords internal
-#' Fits neural network for either numerical or categorical dependent variable
 fit_neural_network <- function (f, data, layers, type, dependent, independent,
                                 ...) {
     if (type == "numerical") {
@@ -86,14 +88,14 @@ fit_neural_network <- function (f, data, layers, type, dependent, independent,
     }
 }
 
+#' Fits neural network for numerical dependent variable.
 #' @keywords internal
-#' Fits neural network for numerical dependent variable
 fit_neural_network_numeric <- function (f, data, layers, ...) {
     return(neuralnet(f, data = data, hidden = layers, ...))
 }
 
+#' Fits neural network for cateogircal dependent variable.
 #' @keywords internal
-#' Fits neural network for cateogircal dependent variable
 fit_neural_network_categorical <- function (f, data, layers, dependent,
                                             independent, ...) {
     identifier <- class.ind(data[[dependent]])
