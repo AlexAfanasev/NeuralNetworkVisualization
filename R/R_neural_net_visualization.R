@@ -80,12 +80,11 @@ get_predictors <- function (neural_net, predictors) {
 #' Plots partial dependencies for multiple predictors.
 #' @keywords internal
 plot_multiple <- function (neural_net, predictors, probs) {
-    # TODO: Ask Jaqueline about that fucking magick number
-    fucking_magic_number <- ifelse(neural_net$type == "categorical",
+    prediction_names <- ifelse(neural_net$type == "categorical",
                                    yes = 2, no = 1)
     prepared_data <- predictors %>%
-        map(~ prepare_data(neural_net, .x, probs)) %>%
-        map(~ gather(.x, "predictor", "values", fucking_magic_number)) %>%
+        map(~ prepare_data(neural_net, .x)) %>%
+        map(~ gather(.x, "predictor", "values", prediction_names)) %>%
         bind_rows()
     if (neural_net$type == "numerical") {
         return(plot_multiple_numerical(prepared_data, neural_net))
@@ -112,14 +111,14 @@ plot_multiple_numerical <- function (prepared_data, neural_net) {
 #' variable.
 #' @keywords internal
 plot_multiple_categorical <- function (prepared_data, neural_net) {
-    return(ggplot(data = prepared_data, aes(values, yhat, color = class)) +
-               geom_line(size = 1) +
-               facet_wrap(vars(predictor), scales = "free") +
-               labs(title = paste("Partial dependence plots with response",
-                                  neural_net$dependent),
-                    y = "Marginal probability of predictor",
-                    x = "Predictor") +
-               theme_grey())
+  return(ggplot(data = prepared_data, aes(values, yhat, color = class)) +
+                 geom_line(size = 1) +
+                 facet_wrap(vars(predictor), scales = "free") +
+                 labs(title = paste("Partial dependence plots with response",
+                                    neural_net$dependent),
+                      y = "Marginal probability of predictor",
+                      x = "Predictor") +
+                 theme_grey())
 }
 
 #' Plots partial dependencies for single given predictor.
@@ -160,3 +159,4 @@ plot_single_categorical <- function (prepared_data, predictor, neural_net) {
                     x = paste(predictor)) +
                theme_grey())
 }
+
