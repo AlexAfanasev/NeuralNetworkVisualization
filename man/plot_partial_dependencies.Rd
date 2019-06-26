@@ -2,38 +2,39 @@
 % Please edit documentation in R/R_neural_net_visualization.R
 \name{plot_partial_dependencies}
 \alias{plot_partial_dependencies}
-\title{Function for plotting the partial dependencies of the created NeuralNetwork
-in R window.}
+\title{Function for plotting the partial dependencies of the created NeuralNetwork}
 \usage{
 plot_partial_dependencies(neural_net, predictors = "all", probs = c(0,
-  0))
+  0), type = "ggplot")
 }
 \arguments{
 \item{neural_net}{The NeuralNetwork instance, see:
 \code{\link{NeuralNetwork}}}
 
-\item{predictors}{The predictors of the neural network for which to plot the
-partial dependencies}
+\item{predictors}{Vector of predictors of the neural network for which to
+plot the partial dependencies.}
 
-\item{probs}{Vector of 2 probabilities for the confidence intervals.
-If booth are 0 intervals will not be plotted.}
+\item{probs}{Vector of lower and upper bound probabilities for the confidence
+interval. If booth are 0, intervals will not be plotted.}
+
+\item{type}{Either 'ggplot' if the plot should be created using ggplot or
+'ggplotly' if plotly should be used.}
 }
 \value{
 Created figure
 }
 \description{
-\code{plot_partial_dependencies} Plots the partial dependencies for
+\code{plot_partial_dependencies} plots the partial dependencies for
   the specified predictors.
 }
 \examples{
-\dontrun{
 # Example: Numeric or Binary
 library(MASS)
 neural_network <- NeuralNetwork(f = "medv ~ .", data = Boston,
                                 layers = c(5, 3), scale = TRUE,
                                 linear.output = TRUE)
 plot_partial_dependencies(neural_network, predictors = "crim",
-                          probs = c(0.2, 0.8))
+                          probs = c(0.2, 0.8), type = "ggplotly")
 plot_partial_dependencies(neural_network, predictors = c("crim", "age"))
 plot_partial_dependencies(neural_network, probs = c(0.1, 0.9))
 
@@ -46,6 +47,6 @@ neural_network <- NeuralNetwork(f = "Species ~ .", data = iris,
 plot_partial_dependencies(neural_network, predictors = "Sepal.Length")
 plot_partial_dependencies(neural_network,
                           predictors = c("Sepal.Length", "Petal.Length"))
-plot_partial_dependencies(neural_network)
-}
+plot_partial_dependencies(neural_network, type = "ggplotly")
+
 }

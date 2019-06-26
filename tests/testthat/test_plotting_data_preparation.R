@@ -31,8 +31,13 @@ test_that("Data is correctly prepared for plotting with numerical
     }
 
     for (predictor in syms(model$neural_network$model.list$variables)) {
-      expect_equal(prepare_data(model, predictor),
-                   prepare_numeric_data(predictor, scaled, nn))
+        result_data <- prepare_data(model, predictor)
+        expected_data <- prepare_numeric_data(predictor, scaled, nn)
+        expect_equal(result_data$yhat, expected_data$yhat)
+        expect_equal(any(is.na(result_data$lwr)), FALSE)
+        expect_equal(any(is.na(result_data$upr)), FALSE)
+        expect_equal(all(result_data$lwr <= result_data$yhat), TRUE)
+        expect_equal(all(result_data$upr >= result_data$yhat), TRUE)
     }
 })
 
@@ -86,9 +91,14 @@ test_that("Data is correctly prepared for plotting with categorical
     }
 
     for (predictor in syms(model$neural_network$model.list$variables)) {
-      expect_equal(prepare_data(model, predictor),
-                   prepare_categorical_data(predictor, train_test,
-                                            nn, "Species"))
+        result_data <- prepare_data(model, predictor)
+        expected_data <- prepare_categorical_data(predictor, train_test,
+                                                  nn, "Species")
+        expect_equal(result_data$yhat, expected_data$yhat)
+        expect_equal(any(is.na(result_data$lwr)), FALSE)
+        expect_equal(any(is.na(result_data$upr)), FALSE)
+        expect_equal(all(result_data$lwr <= result_data$yhat), TRUE)
+        expect_equal(all(result_data$upr >= result_data$yhat), TRUE)
     }
 })
 
@@ -140,7 +150,12 @@ test_that("Data is correctly prepared for plotting with binary
     }
 
     for (predictor in syms(model$neural_network$model.list$variables)) {
-      expect_equal(prepare_data(model, predictor),
-                   prepare_numeric_data(predictor, scaled, nn))
+        result_data <- prepare_data(model, predictor)
+        expected_data <- prepare_numeric_data(predictor, scaled, nn)
+        expect_equal(result_data$yhat, expected_data$yhat)
+        expect_equal(any(is.na(result_data$lwr)), FALSE)
+        expect_equal(any(is.na(result_data$upr)), FALSE)
+        expect_equal(all(result_data$lwr <= result_data$yhat), TRUE)
+        expect_equal(all(result_data$upr >= result_data$yhat), TRUE)
     }
 })

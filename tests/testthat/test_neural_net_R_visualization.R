@@ -11,12 +11,23 @@ test_that("Plotting with numerical dependent variable works", {
     expect_error(plot_partial_dependencies(model), NA)
     expect_error(plot_partial_dependencies(model, predictors = "crim"), NA)
     expect_error(plot_partial_dependencies(
-        model, predictors = c("crim", "age")), NA)
+        model, predictors = "crim", type = "ggplotly", probs = c(0.2, 0.8)), NA)
+    expect_error(plot_partial_dependencies(
+        model, predictors = c("crim", "age"), probs = c(0.1, 0.9)), NA)
+    expect_error(plot_partial_dependencies(
+        model, predictors = c("crim", "age"), type = "ggplotly"), NA)
+
     expect_error(plot_partial_dependencies(
         model, predictors = c("crim", "all")))
     expect_error(plot_partial_dependencies(
         model, predictors = c("crim", "not_there")))
     expect_error(plot_partial_dependencies(model, predictors = "not_there"))
+    expect_error(plot_partial_dependencies(
+        model, predictors = "crim", probs = c("a", 1)))
+    expect_error(plot_partial_dependencies(
+        model, predictors = "crim", probs = c(1, 2)))
+    expect_error(plot_partial_dependencies(
+        model, predictors = "crim", type = "test"))
 })
 
 test_that("Plotting with categorical dependent variable works", {
@@ -39,17 +50,34 @@ test_that("Plotting with categorical dependent variable works", {
         linear.output = FALSE, lifesign = "minimal", stepmax = 1000000,
         threshold = 0.001)
 
+    # TODO: Prediction intervals not yet implemented for categorical
+    #       dependent variables
     expect_error(plot_partial_dependencies(model), NA)
     expect_error(plot_partial_dependencies(
         model, predictors = "Sepal.Length"), NA)
+    # expect_error(plot_partial_dependencies(
+    #     model, predictors = "Sepal.Length", type = "ggplotly",
+    #     probs = c(0.2, 0.8)), NA)
     expect_error(plot_partial_dependencies(
         model, predictors = c("Sepal.Length", "Petal.Length")), NA)
+    # expect_error(plot_partial_dependencies(
+    #     model, predictors = c("Sepal.Length", "Petal.Length"),
+    #     probs = c(0.1, 0.9)), NA)
+    expect_error(plot_partial_dependencies(
+        model, predictors = c("Sepal.Length", "Petal.Length"),
+        type = "ggplotly"), NA)
+
     expect_error(plot_partial_dependencies(
         model, predictors = c("Sepal.Length", "all")))
     expect_error(plot_partial_dependencies(
         model, predictors = c("Sepal.Length", "not_there")))
     expect_error(plot_partial_dependencies(model, predictors = "not_there"))
+    # expect_error(plot_partial_dependencies(
+    #     model, predictors = "Sepal.Length", probs = c(1, 2)))
+    expect_error(plot_partial_dependencies(
+        model, predictors = "Sepal.Length", type = "hi"))
 })
+
 
 test_that("Plotting with binary dependent variable works", {
     library(faraway)
@@ -79,8 +107,21 @@ test_that("Plotting with binary dependent variable works", {
     expect_error(plot_partial_dependencies(
         model, predictors = c("pregnant", "diastolic")), NA)
     expect_error(plot_partial_dependencies(
+        model, predictors = "glucose", type = "ggplotly",
+        probs = c(0.2, 0.8)), NA)
+    expect_error(plot_partial_dependencies(
+        model, predictors = c("pregnant", "diastolic"),
+        probs = c(0.1, 0.9)), NA)
+    expect_error(plot_partial_dependencies(
+        model, predictors = c("pregnant", "diastolic"), type = "ggplotly"), NA)
+
+    expect_error(plot_partial_dependencies(
         model, predictors = c("pregnant", "all")))
     expect_error(plot_partial_dependencies(
         model, predictors = c("pregnant", "not_there")))
     expect_error(plot_partial_dependencies(model, predictors = "not_there"))
+    expect_error(plot_partial_dependencies(
+        model, predictors = c("pregnant", "diastolic"), probs = c(100, 0)))
+    expect_error(plot_partial_dependencies(
+        model, predictors = c("pregnant", "diastolic"), type = "?"))
 })

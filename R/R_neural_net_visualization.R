@@ -1,27 +1,27 @@
 #' Function for plotting the partial dependencies of the created NeuralNetwork
-#' in R window.
 #'
-#' \code{plot_partial_dependencies} Plots the partial dependencies for
+#' \code{plot_partial_dependencies} plots the partial dependencies for
 #'   the specified predictors.
 #'
 #' @param neural_net The NeuralNetwork instance, see:
 #'   \code{\link{NeuralNetwork}}
-#' @param predictors The predictors of the neural network for which to plot the
-#'   partial dependencies
-#' @param probs Vector of 2 probabilities for the confidence intervals.
-#'   If booth are 0 intervals will not be plotted.
+#' @param predictors Vector of predictors of the neural network for which to
+#'   plot the partial dependencies.
+#' @param probs Vector of lower and upper bound probabilities for the confidence
+#'   interval. If booth are 0, intervals will not be plotted.
+#' @param type Either 'ggplot' if the plot should be created using ggplot or
+#'   'ggplotly' if plotly should be used.
 #'
 #' @return Created figure
 #'
 #' @examples
-#' \dontrun{
 #' # Example: Numeric or Binary
 #' library(MASS)
 #' neural_network <- NeuralNetwork(f = "medv ~ .", data = Boston,
 #'                                 layers = c(5, 3), scale = TRUE,
 #'                                 linear.output = TRUE)
 #' plot_partial_dependencies(neural_network, predictors = "crim",
-#'                           probs = c(0.2, 0.8))
+#'                           probs = c(0.2, 0.8), type = "ggplotly")
 #' plot_partial_dependencies(neural_network, predictors = c("crim", "age"))
 #' plot_partial_dependencies(neural_network, probs = c(0.1, 0.9))
 #'
@@ -34,28 +34,53 @@
 #' plot_partial_dependencies(neural_network, predictors = "Sepal.Length")
 #' plot_partial_dependencies(neural_network,
 #'                           predictors = c("Sepal.Length", "Petal.Length"))
-#' plot_partial_dependencies(neural_network)
-#' }
+#' plot_partial_dependencies(neural_network, type = "ggplotly")
+#'
 #' @importFrom plotly ggplotly
-#' @importFrom dplyr syms bind_rows
-#' @importFrom purrr map
-#' @importFrom tidyr gather
-#' @importFrom ggplot2 aes geom_line geom_ribbon facet_wrap vars labs theme_grey ggplot
-#' @importFrom magrittr %>%
 #' @name plot_partial_dependencies
 #' @export
 plot_partial_dependencies <- function (neural_net, predictors = "all",
-                                       probs = c(0, 0)) {
+                                       probs = c(0, 0), type = "ggplot") {
+    if (!all(probs == 0)) is_valid_probs(probs); is_valid_type(type)
     predictors <- get_predictors(neural_net, predictors)
-    # TODO: Add check for probs function!
     if (length(predictors) > 1) {
-        return(ggplotly(plot_multiple(neural_net, predictors, probs)))
+        figure <- plot_multiple(neural_net, predictors, probs)
     } else {
-        return(ggplotly(plot_single(neural_net, predictors[[1]], probs)))
+        figure <- plot_single(neural_net, predictors[[1]], probs)
+    }
+    if (type == "ggplot") {
+        return(figure)
+    } else {
+        return(ggplotly(figure))
+    }
+}
+
+#' Checks for valid type of plot.
+#'
+#' @keywords internal
+is_valid_type <- function (type) {
+    allowed <- c("ggplot", "ggplotly")
+    if (!(type %in% allowed)) {
+        stop("Please specify allowed type for plot: either ggplot or ggplotly!")
+    }
+}
+
+#' Checks for valid prediction interval probabilities.
+#'
+#' @keywords internal
+is_valid_probs <- function (probs) {
+    if (!is.numeric(probs) || length(probs) != 2) {
+        stop("Please specify the prediction interval probabilities as a vector
+             of two numbers!")
+    }
+    if (sum(probs) != 1) {
+        stop("The prediction interval probabilities have to add up to one!")
     }
 }
 
 #' Returns the predictors for which to plot the partial dependencies.
+#'
+#' @importFrom dplyr syms
 #' @keywords internal
 get_predictors <- function (neural_net, predictors) {
     if (length(predictors) > 1) {
@@ -78,12 +103,17 @@ get_predictors <- function (neural_net, predictors) {
 }
 
 #' Plots partial dependencies for multiple predictors.
+#'
+#' @importFrom magrittr %>%
+#' @importFrom purrr map
+#' @importFrom tidyr gather
+#' @importFrom dplyr bind_rows
 #' @keywords internal
 plot_multiple <- function (neural_net, predictors, probs) {
     prediction_names <- ifelse(neural_net$type == "categorical",
                                    yes = 2, no = 1)
     prepared_data <- predictors %>%
-        map(~ prepare_data(neural_net, .x)) %>%
+        map(~ prepare_data(neural_net, .x, probs)) %>%
         map(~ gather(.x, "predictor", "values", prediction_names)) %>%
         bind_rows()
     if (neural_net$type == "numerical") {
@@ -95,9 +125,12 @@ plot_multiple <- function (neural_net, predictors, probs) {
 
 #' Plots partial dependencies for given predictors with numerical dependent
 #' variable.
+#'
+#' @importFrom ggplot2 ggplot aes geom_line facet_wrap vars labs theme_grey
 #' @keywords internal
 plot_multiple_numerical <- function (prepared_data, neural_net) {
-    return(ggplot(aes(values, yhat, ymin = lwr, ymax = upr), data = prepared_data) +
+    return(ggplot(aes(values, yhat, ymin = lwr, ymax = upr),
+                  data = prepared_data) +
                geom_line(size = 1) + geom_ribbon(alpha = 0.25) +
                facet_wrap(vars((predictor)), scales = "free") +
                labs(title = paste("Partial dependence plots with response",
@@ -109,10 +142,14 @@ plot_multiple_numerical <- function (prepared_data, neural_net) {
 
 #' Plots partial dependencies for given predictor with categorical dependent
 #' variable.
+#'
+#' @importFrom ggplot2 ggplot aes geom_line facet_wrap vars labs theme_grey
 #' @keywords internal
 plot_multiple_categorical <- function (prepared_data, neural_net) {
   return(ggplot(data = prepared_data, aes(values, yhat, color = class)) +
-                 geom_line(size = 1) +
+                 geom_line(size = 1) + geom_ribbon(
+                     aes(x = values, ymin = lwr, ymax = upr, group = class),
+                     alpha = 0.25) +
                  facet_wrap(vars(predictor), scales = "free") +
                  labs(title = paste("Partial dependence plots with response",
                                     neural_net$dependent),
@@ -122,6 +159,7 @@ plot_multiple_categorical <- function (prepared_data, neural_net) {
 }
 
 #' Plots partial dependencies for single given predictor.
+#'
 #' @keywords internal
 plot_single <- function (neural_net, predictor, probs) {
     prepared_data <- prepare_data(neural_net, predictor, probs)
@@ -134,6 +172,8 @@ plot_single <- function (neural_net, predictor, probs) {
 
 #' Plots partial dependencies for given predictor with numerical dependent
 #' variable.
+#'
+#' @importFrom ggplot2 ggplot aes geom_line geom_ribbon labs theme_grey
 #' @keywords internal
 plot_single_numerical <- function (prepared_data, predictor, neural_net) {
     return(ggplot(data = prepared_data,
@@ -147,16 +187,18 @@ plot_single_numerical <- function (prepared_data, predictor, neural_net) {
 
 #' Plots partial dependencies for given predictor with categorical dependent
 #' variable.
+#'
+#' @importFrom ggplot2 ggplot aes geom_line labs theme_grey
 #' @keywords internal
 plot_single_categorical <- function (prepared_data, predictor, neural_net) {
     return(ggplot(data = prepared_data,
-                  aes(x = !!predictor, y = yhat, colour = class,
-                      ymin = lwr, ymax = upr)) +
-               geom_line(size = 1) + geom_ribbon(alpha = 0.25) +
+                  aes(x = !!predictor, y = yhat, colour = class)) +
+               geom_line(size = 1) + geom_ribbon(aes(
+                   x = !!predictor, ymin = lwr, ymax = upr),
+                   alpha = 0.25) +
                labs(title = paste("Partial dependence plot for",
                                   neural_net$dependent),
                     y = paste("Marginal probability of", predictor),
                     x = paste(predictor)) +
                theme_grey())
 }
-

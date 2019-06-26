@@ -10,9 +10,10 @@ set.seed(1)
 model <- NeuralNetwork(medv ~ ., data = train, layers = c(5, 3),
                        scale = TRUE, linear.output = TRUE)
 
-plot_partial_dependencies(model)
+plot_partial_dependencies(model, probs = c(0.1, 0.9))
 plot_partial_dependencies(model, predictors = "crim")
-plot_partial_dependencies(model, predictors = c("crim", "age"))
+plot_partial_dependencies(model, predictors = c("crim", "age"),
+                          type = "ggplotly", probs = c(0.05, 0.95))
 
 # Example for Plotting with categorical dependent variable
 library(datasets)
@@ -34,9 +35,10 @@ model <- NeuralNetwork(
     linear.output = FALSE, lifesign = "minimal", stepmax = 1000000,
     threshold = 0.001)
 
-plot_partial_dependencies(model)
+plot_partial_dependencies(model, probs = c(0.1, 0.9))
 plot_partial_dependencies(model, predictors = "Sepal.Length")
-plot_partial_dependencies(model, predictors = c("Sepal.Length", "Petal.Length"))
+plot_partial_dependencies(model, predictors = c("Sepal.Length", "Petal.Length"),
+                          type = "ggplotly", probs = c(0.05, 0.95))
 
 # Example for Plotting with binary dependent variable
 library(faraway)
@@ -61,6 +63,7 @@ model <- NeuralNetwork(test ~ pregnant + glucose + diastolic + triceps +
                        data = train, layers = 4,
                        scale = TRUE, linear.output = TRUE)
 
-plot_partial_dependencies(model)
+plot_partial_dependencies(model, probs = c(0.1, 0.9))
 plot_partial_dependencies(model, predictors = "glucose")
-plot_partial_dependencies(model, predictors = c("pregnant", "diastolic"))
+plot_partial_dependencies(model, predictors = c("pregnant", "diastolic"),
+                          type = "ggplotly", probs = c(0.05, 0.95))
