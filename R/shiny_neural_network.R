@@ -1,39 +1,47 @@
+# TODO:
+# 1. Multiple checkboxes
+# 2. Center everything (left and right side of the website should have margins)
+# 3. Add submit button to Plot tab
+# 4. Add flash message to Neural Network Settings tab when model is sucessfully
+#    fitted
+# 5. Add clear (model and data) button maybe???
+# 6. Split ui and server in different files and split tabs into functions or
+#    similar
+
+
 library(shiny)
+library(shinyWidgets)
 library(NeuralNetworkVisualization)
 
-### ui#######
-ui <- shinyUI(
-    pageWithSidebar(
+ui <- fluidPage(
+    titlePanel("Marginal Effects for Neural Networks"),
 
-        headerPanel("CSV Data explorer"),
-
-        sidebarPanel(
-            fileInput("datafile", "Choose CSV File",
-                      multiple = FALSE,
-                      accept = c("text/csv", "text/plain")),
-            checkboxInput("header", "Header", TRUE),
-            radioButtons("sep", "Separator",
-                         choices = c(Comma = ",",
-                                     Semicolon = ";",
-                                     Tab = "\t"),
-                         selected = ",")
-        ),
-
-        mainPanel(
-            tabsetPanel(type = "tabs",
-                        tabPanel("Neural Network Settings",
-                                 br(),
-                                 uiOutput("networktraining")),
-                        tabPanel("Plot",
-                                 br(),
-                                 uiOutput("networkplotting"),
-                                 plotly::plotlyOutput("plot"))
-            )
-        )
+    tabsetPanel(
+        tabPanel("About",
+                 1),
+        tabPanel("Upload Data",
+                 h4("Upload Data", style = "color:blue"),
+                 fileInput("datafile", "Choose CSV File",
+                           multiple = FALSE,
+                           accept = c("text/csv", "text/plain")),
+                 h4("Upload Settings", style = "color:blue"),
+                 awesomeCheckbox("header", "Header", value = TRUE),
+                 radioButtons("sep", "Separator",
+                              choices = c(Comma = ",",
+                                          Semicolon = ";",
+                                          Tab = "\t"),
+                              selected = ",")),
+        tabPanel("Neural Network Settings",
+                 br(),
+                 uiOutput("networktraining")),
+        tabPanel("Plot",
+                 br(),
+                 uiOutput("networkplotting"),
+                 plotly::plotlyOutput("plot")),
+        type = "tabs"
     )
 )
 
-### server ####
 server <- shinyServer(
     function (session,input, output) {
         variables <- reactiveValues(neuralnet = NULL)
@@ -102,21 +110,6 @@ server <- shinyServer(
                 linear.output = TRUE)
         })
 
-        # neuralnet <- reactive({
-        #     if (input$classreg == "categorical") {
-        #         regressand  = paste(levels(Dataset()[[input$dependent]]),
-        #                             collapse = "+")
-        #     } else {
-        #         regressand = input$dependent
-        #     }
-        #
-        #     # alternative to paste, did not yield success
-        #     predictors <- paste(input$independent, collapse = "+")
-        #     fml <- as.formula(sprintf('%s ~ %s', regressand, predictors))
-        #     NeuralNetwork(fml, Dataset(),
-        #                   layers = c(input$layer1, input$layer2), scale = T)
-        # })
-
         output$plot <- plotly::renderPlotly({
             if (!is.null(input$plotting) & !is.null(variables$neuralnet)) {
                 print("start plotting")
@@ -133,5 +126,4 @@ server <- shinyServer(
     }
 )
 
-#### app ##########
 shinyApp(ui, server)
