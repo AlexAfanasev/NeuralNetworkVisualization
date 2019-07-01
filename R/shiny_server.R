@@ -1,49 +1,7 @@
-# TODO:
-# 1. Multiple checkboxes
-# 2. Center everything (left and right side of the website should have margins)
-# 3. Add submit button to Plot tab
-# 4. Add flash message to Neural Network Settings tab when model is sucessfully
-#    fitted
-# 5. Add clear (model and data) button maybe???
-# 6. Split ui and server in different files and split tabs into functions or
-#    similar
-
-
 library(shiny)
-library(shinyWidgets)
-library(NeuralNetworkVisualization)
-
-ui <- fluidPage(
-    titlePanel("Marginal Effects for Neural Networks"),
-
-    tabsetPanel(
-        tabPanel("About",
-                 1),
-        tabPanel("Upload Data",
-                 h4("Upload Data", style = "color:blue"),
-                 fileInput("datafile", "Choose CSV File",
-                           multiple = FALSE,
-                           accept = c("text/csv", "text/plain")),
-                 h4("Upload Settings", style = "color:blue"),
-                 awesomeCheckbox("header", "Header", value = TRUE),
-                 radioButtons("sep", "Separator",
-                              choices = c(Comma = ",",
-                                          Semicolon = ";",
-                                          Tab = "\t"),
-                              selected = ",")),
-        tabPanel("Neural Network Settings",
-                 br(),
-                 uiOutput("networktraining")),
-        tabPanel("Plot",
-                 br(),
-                 uiOutput("networkplotting"),
-                 plotly::plotlyOutput("plot")),
-        type = "tabs"
-    )
-)
 
 server <- shinyServer(
-    function (session,input, output) {
+    function (session, input, output) {
         variables <- reactiveValues(neuralnet = NULL)
 
         Dataset <- reactive({
@@ -125,5 +83,3 @@ server <- shinyServer(
         })
     }
 )
-
-shinyApp(ui, server)
