@@ -4,7 +4,7 @@
 \alias{prepare_data_numeric}
 \title{Prepares the data with numerical dependent variable.}
 \usage{
-prepare_data_numeric(grid, predictor, neural_net, probs)
+prepare_data_numeric(grid, predictor, neural_net, probs, nrepititions)
 }
 \description{
 Prepares the data with numerical dependent variable.

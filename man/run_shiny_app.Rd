@@ -11,6 +11,7 @@ Run the shiny app for visualizing the marginal effects of the NeuralNewtork
 }
 \examples{
 \dontrun{
+# Starts the shiny app
 run_shiny_app()
 }
 }

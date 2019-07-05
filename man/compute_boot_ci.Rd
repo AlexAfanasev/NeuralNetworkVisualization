@@ -4,7 +4,7 @@
 \alias{compute_boot_ci}
 \title{Computes bootstrap interval for given probability.}
 \usage{
-compute_boot_ci(bootstrap_data, probs)
+compute_boot_ci(bootstrap_data, probs, nrepititions)
 }
 \description{
 Computes bootstrap interval for given probability.

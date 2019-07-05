@@ -7,14 +7,18 @@
 #'   should be transformed with sym).
 #' @param probs Vector of ower and upper bound probabilities for the confidence
 #'   interval.
+#' @param nrepititions Number of samples used within bootstrap for confidence
+#'   intervals.
 #'
 #' @return Data.frame with the prepared data.
 #'
 #' @name prepare_data
 #' @keywords internal
-prepare_data <- function (neural_net, predictor, probs = c(0.05, 0.95)) {
+prepare_data <- function (neural_net, predictor, probs = c(0.05, 0.95),
+                          nrepititions = 300) {
     grid <- create_grid(neural_net, predictor)
-    plotting_data <- create_plotting_data(grid, predictor, neural_net, probs)
+    plotting_data <- create_plotting_data(grid, predictor, neural_net, probs,
+                                          nrepititions)
     return(plotting_data)
 }
 
@@ -33,13 +37,14 @@ create_grid <- function (neural_net, predictor) {
 #' Creates the plotting data.
 #'
 #' @keywords internal
-create_plotting_data <- function (grid, predictor, neural_net, probs) {
+create_plotting_data <- function (grid, predictor, neural_net, probs,
+                                  nrepititions) {
     if (neural_net$type == "numerical") {
         plotting_data <- prepare_data_numeric(grid, predictor, neural_net,
-                                              probs)
+                                              probs, nrepititions)
     } else {
         plotting_data <- prepare_data_categoric(grid, predictor, neural_net,
-                                                probs)
+                                                probs, nrepititions)
     }
     return(plotting_data)
 }
@@ -50,8 +55,9 @@ create_plotting_data <- function (grid, predictor, neural_net, probs) {
 #' @importFrom dplyr mutate summarize_at group_by ungroup
 #' @importFrom neuralnet compute
 #' @keywords internal
-prepare_data_numeric <- function (grid, predictor, neural_net, probs) {
-    functions <- create_functions(probs)
+prepare_data_numeric <- function (grid, predictor, neural_net, probs,
+                                  nrepititions) {
+    functions <- create_functions(probs, nrepititions)
     grid <- grid %>% mutate(prediction = compute(
         neural_net$neural_network, grid)$net.result)
     partial_dependence <- grid %>%
@@ -69,12 +75,13 @@ prepare_data_numeric <- function (grid, predictor, neural_net, probs) {
 #' @importFrom tidyr gather
 #' @importFrom stringr str_replace
 #' @keywords internal
-prepare_data_categoric <- function (grid, predictor, neural_net, probs) {
+prepare_data_categoric <- function (grid, predictor, neural_net, probs,
+                                    nrepititions) {
     prediction <- as.data.frame(
         compute(neural_net$neural_network, grid)$net.result)
     names(prediction) <- paste(neural_net$neural_network$model.list$response,
                                "_prediction", sep = "")
-    functions <- create_functions(probs)
+    functions <- create_functions(probs, nrepititions)
     grid <- grid %>%
         bind_cols(prediction) %>%
         gather(class, prediction, ends_with("prediction")) %>%
@@ -92,11 +99,12 @@ prepare_data_categoric <- function (grid, predictor, neural_net, probs) {
 #' @importFrom magrittr %>%
 #' @importFrom purrr partial set_names
 #' @keywords internal
-create_functions <- function (probs) {
+create_functions <- function (probs, nrepititions) {
     if (all(probs == 0)) {
         functions <- c(mean, mean, mean)
     } else {
-        functions <- c(mean, map(probs, ~partial(compute_boot_ci, probs = .x)))
+        functions <- c(mean, map(probs, ~partial(compute_boot_ci, probs = .x,
+                                                 nrepititions = nrepititions)))
     }
     functions <- functions  %>% set_names(nm = c("yhat", "lwr", "upr"))
     return(functions)
@@ -105,8 +113,7 @@ create_functions <- function (probs) {
 #' Computes bootstrap interval for given probability.
 #'
 #' @keywords internal
-compute_boot_ci <- function (bootstrap_data, probs) {
-    nrepititions <- 300
+compute_boot_ci <- function (bootstrap_data, probs, nrepititions) {
     number_of_data_points <- length(bootstrap_data)
     bootstrap_resulting_data <- matrix(nrow = nrepititions, ncol = 1)
     for (current_rep in 1:nrepititions) {
