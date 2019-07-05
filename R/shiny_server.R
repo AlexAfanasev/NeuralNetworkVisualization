@@ -9,34 +9,11 @@ server <- shinyServer(
             if (is.null(infile)) {
                 return(NULL)
             } else {
-                return(read.csv(infile$datapath, header = input$header,
-                                sep = input$sep, stringsAsFactors = TRUE))
+                neural_network <- readRDS(infile$datapath)
+                variables$neuralnet <- neural_network
+
+                return(neural_network$neural_network$data)
             }
-        })
-
-
-        output$networktraining <- renderUI({
-            if (identical(Dataset(), '') ||
-                identical(Dataset(), data.frame())) {
-                return(NULL)
-            }
-
-            columns <- names(Dataset())
-            tagList(
-                selectInput("dependent", "Select a  dependent variable:",
-                            choices = columns),
-                checkboxGroupInput(
-                    "predictor",
-                    "Independent variables for training the Neural Network",
-                    choices = c("all",columns)),
-                numericInput("layer1", "Neural network layer 1",
-                             value = 1, min = 1, max = NA),
-                numericInput("layer2", "Neural network layer 2",
-                             value = 1, min = 1, max = NA),
-                radioButtons("scale", "Scale neural network",
-                             choices = c(True = T, False = F), selected = T),
-                actionButton("fit", "Train Neural Network!")
-            )
         })
 
         output$networkplotting <- renderUI({
@@ -48,24 +25,6 @@ server <- shinyServer(
             checkboxGroupInput(
                 "plotting", "Variables for plotting",
                 choices = c("all",columns))
-        })
-
-        observeEvent(input$fit, {
-            if (input$predictor == "all") {
-                independent <- names(Dataset())[
-                    names(Dataset()) != input$dependent]
-            } else {
-                independent <- input$predictor
-            }
-            formula <- paste(input$dependent,
-                             paste(independent, collapse = " + "),
-                             sep = " ~ ")
-            print(formula)
-            set.seed(1)
-            variables$neuralnet <- NeuralNetwork(
-                f = formula, data = Dataset(),
-                layers = c(5, 3), scale = TRUE,
-                linear.output = TRUE)
         })
 
         output$plot <- plotly::renderPlotly({

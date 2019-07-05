@@ -1,10 +1,7 @@
 # TODO:
-# 1. Multiple checkboxes
-# 2. Center everything (left and right side of the website should have margins)
-# 3. Add submit button to Plot tab
-# 4. Add flash message to Neural Network Settings tab when model is sucessfully
-#    fitted
-# 5. Add clear (model and data) button maybe???
+# 1. Shiny widget pickerInput for checkboxes in plot panel
+# 2. Add action button to plot panel, 2 input boxes for confidence interval probs, maybe input box for nrepititions?????
+# 3. Center everything (left and right side of the website should have margins)
 
 #' Run the shiny app for visualizing the marginal effects of the NeuralNewtork
 #'
