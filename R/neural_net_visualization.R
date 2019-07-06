@@ -11,6 +11,8 @@
 #'   interval. If booth are 0, intervals will not be plotted.
 #' @param type Either 'ggplot' if the plot should be created using ggplot or
 #'   'ggplotly' if plotly should be used.
+#' @param nrepetitions Number of samples used within bootstrap for confidence
+#'   intervals.
 #'
 #' @return Created figure
 #'
@@ -40,13 +42,13 @@
 #' @name plot_partial_dependencies
 #' @export
 plot_partial_dependencies <- function (neural_net, predictors = "all",
-                                       probs = c(0, 0), type = "ggplot") {
+                                       probs = c(0, 0), type = "ggplot", nrepetitions = 300) {
     if (!all(probs == 0)) is_valid_probs(probs); is_valid_type(type)
     predictors <- get_predictors(neural_net, predictors)
     if (length(predictors) > 1) {
-        figure <- plot_multiple(neural_net, predictors, probs)
+        figure <- plot_multiple(neural_net, predictors, probs, nrepetitions)
     } else {
-        figure <- plot_single(neural_net, predictors[[1]], probs)
+        figure <- plot_single(neural_net, predictors[[1]], probs, nrepetitions)
     }
     if (type == "ggplot") {
         return(figure)
@@ -109,11 +111,11 @@ get_predictors <- function (neural_net, predictors) {
 #' @importFrom tidyr gather
 #' @importFrom dplyr bind_rows
 #' @keywords internal
-plot_multiple <- function (neural_net, predictors, probs) {
+plot_multiple <- function (neural_net, predictors, probs, nrepetitions) {
     prediction_names <- ifelse(neural_net$type == "categorical",
                                    yes = 2, no = 1)
     prepared_data <- predictors %>%
-        map(~ prepare_data(neural_net, .x, probs)) %>%
+        map(~ prepare_data(neural_net, .x, probs, nrepetitions)) %>%
         map(~ gather(.x, "predictor", "values", prediction_names)) %>%
         bind_rows()
     if (neural_net$type == "numerical") {
@@ -161,8 +163,8 @@ plot_multiple_categorical <- function (prepared_data, neural_net) {
 #' Plots partial dependencies for single given predictor.
 #'
 #' @keywords internal
-plot_single <- function (neural_net, predictor, probs) {
-    prepared_data <- prepare_data(neural_net, predictor, probs)
+plot_single <- function (neural_net, predictor, probs, nrepetitions) {
+    prepared_data <- prepare_data(neural_net, predictor, probs, nrepetitions)
     if (neural_net$type == "numerical") {
         return(plot_single_numerical(prepared_data, predictor, neural_net))
     } else if (neural_net$type == "categorical") {

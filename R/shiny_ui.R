@@ -27,18 +27,48 @@ upload_nn_panel <- function () {
 #' @keywords internal
 visualization_panel <- function () {
     return(tabPanel("Plot",
-                    br(),
-                    uiOutput("networkplotting"),
-                    plotly::plotlyOutput("plot")))
+                    sidebarLayout(
+                      sidebarPanel(width = 5,
+                                   br(),
+                                   uiOutput("networkplotting"),
+                                   br(),
+                                   actionBttn("go", "Press to plot!"),
+                                   br()
+                      ),
+                      mainPanel(width = 7,
+                                br(),
+                        plotly::plotlyOutput("plot")))))
+
 }
 
-ui <- fluidPage(
-    titlePanel("Marginal Effects for Neural Networks"),
-
-    tabsetPanel(
+ui <- tagList(
+      tags$style("html,body{background-color: white;},
+                 main{ background-color: white;
+                 }
+                 .container{
+                 width: 100%;
+                 margin: 0 auto;
+                 padding: 0;
+                 }
+                 #myimg{
+                 width:30%;
+                 }
+                 @media screen and (min-width: 1200px){
+                 .container{
+                 width: 1200px;
+                 }
+                 }"),
+        tags$div(class="container",
+        fluidPage(
+        br(),
+        titlePanel("Marginal Effects for Neural Networks"),
+        br(),
+        tabsetPanel(
         about_panel(),
         upload_nn_panel(),
         visualization_panel(),
         type = "tabs"
+       )
+     )
     )
-)
+  )
