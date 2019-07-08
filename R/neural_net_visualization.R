@@ -97,7 +97,7 @@ get_predictors <- function (neural_net, predictors) {
     }
     if (any(!(predictors %in%
               neural_net$neural_network$model.list$variables))) {
-        stop("Please specify predictors that where used in the
+        stop("Please specify predictors that were used in the
              NeuralNetwork!")
     } else {
         return(syms(predictors))
