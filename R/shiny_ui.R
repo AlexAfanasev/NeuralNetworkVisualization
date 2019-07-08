@@ -1,11 +1,10 @@
-library(shiny)
-library(shinyWidgets)
-
-#' Returns the about panel.
-#'
+#' Returns the about panel
 #' @keywords internal
+#' @import shiny
+#' @import shinyWidgets
+#' 
 about_panel <- function () {
-    about <- tabPanel("About",
+    about <- shiny::tabPanel("About",
                       "Here we need to add the documentation for the shiny app")
     return(about)
 }
@@ -14,10 +13,10 @@ about_panel <- function () {
 #'
 #' @keywords internal
 upload_nn_panel <- function () {
-    upload_panel <- tabPanel(
+    upload_panel <- shiny::tabPanel(
         "Upload NeuralNetwork",
-        h4("Upload NeuralNetwork", style = "color:blue"),
-        fileInput("datafile", "Choose NeuralNetwork File",
+        shiny::h4("Upload NeuralNetwork", style = "color:blue"),
+        shiny::fileInput("datafile", "Choose NeuralNetwork File",
                   multiple = FALSE))
     return(upload_panel)
 }
@@ -26,23 +25,23 @@ upload_nn_panel <- function () {
 #'
 #' @keywords internal
 visualization_panel <- function () {
-    return(tabPanel("Plot",
-                    sidebarLayout(
-                      sidebarPanel(width = 5,
-                                   br(),
-                                   uiOutput("networkplotting"),
-                                   br(),
-                                   actionBttn("go", "Press to plot!"),
-                                   br()
+    return(shiny::tabPanel("Plot",
+                    shiny::sidebarLayout(
+                      shiny::sidebarPanel(width = 5,
+                                   shiny::br(),
+                                   shiny::uiOutput("networkplotting"),
+                                   shiny::br(),
+                                   shinyWidgets::actionBttn("go", "Press to plot!"),
+                                   shiny::br()
                       ),
-                      mainPanel(width = 7,
-                                br(),
+                      shiny::mainPanel(width = 7,
+                                shiny::br(),
                         plotly::plotlyOutput("plot")))))
 
 }
 
-ui <- tagList(
-      tags$style("html,body{background-color: white;},
+ui <- shiny::tagList(
+      shiny::tags$style("html,body{background-color: white;},
                  main{ background-color: white;
                  }
                  .container{
@@ -58,12 +57,12 @@ ui <- tagList(
                  width: 1200px;
                  }
                  }"),
-        tags$div(class="container",
-        fluidPage(
-        br(),
-        titlePanel("Marginal Effects for Neural Networks"),
-        br(),
-        tabsetPanel(
+        shiny::tags$div(class="container",
+        shiny::fluidPage(
+        shiny::br(),
+        shiny::titlePanel("Marginal Effects for Neural Networks"),
+        shiny::br(),
+        shiny::tabsetPanel(
         about_panel(),
         upload_nn_panel(),
         visualization_panel(),
