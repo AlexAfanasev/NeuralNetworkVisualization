@@ -5,7 +5,7 @@
 \title{Prepares the data used for further plotting.}
 \usage{
 prepare_data(neural_net, predictor, probs = c(0.05, 0.95),
-  nrepititions = 300)
+  nrepetitions = 300)
 }
 \arguments{
 \item{neural_net}{Fitted NeuralNetwork, see: \code{\link{NeuralNetwork}}}
@@ -16,7 +16,7 @@ should be transformed with sym).}
 \item{probs}{Vector of ower and upper bound probabilities for the confidence
 interval.}
 
-\item{nrepititions}{Number of samples used within bootstrap for confidence
+\item{nrepetitions}{Number of samples used within bootstrap for confidence
 intervals.}
 }
 \value{

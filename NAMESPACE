@@ -3,6 +3,8 @@
 export(NeuralNetwork)
 export(plot_partial_dependencies)
 export(run_shiny_app)
+import(shiny)
+import(shinyWidgets)
 importFrom(dplyr,bind_cols)
 importFrom(dplyr,bind_rows)
 importFrom(dplyr,ends_with)

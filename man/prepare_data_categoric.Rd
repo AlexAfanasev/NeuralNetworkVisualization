@@ -4,7 +4,7 @@
 \alias{prepare_data_categoric}
 \title{Prepares the data with categorical dependent variable.}
 \usage{
-prepare_data_categoric(grid, predictor, neural_net, probs, nrepititions)
+prepare_data_categoric(grid, predictor, neural_net, probs, nrepetitions)
 }
 \description{
 Prepares the data with categorical dependent variable.
