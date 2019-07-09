@@ -15,7 +15,7 @@
 #' @name prepare_data
 #' @keywords internal
 prepare_data <- function (neural_net, predictor, probs = c(0.05, 0.95),
-                          nrepetitions) {
+                          nrepetitions = 300) {
     grid <- create_grid(neural_net, predictor)
     plotting_data <- create_plotting_data(grid, predictor, neural_net, probs,
                                           nrepetitions)

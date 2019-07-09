@@ -4,7 +4,7 @@
 \alias{plot_multiple}
 \title{Plots partial dependencies for multiple predictors.}
 \usage{
-plot_multiple(neural_net, predictors, probs)
+plot_multiple(neural_net, predictors, probs, nrepetitions)
 }
 \description{
 Plots partial dependencies for multiple predictors.

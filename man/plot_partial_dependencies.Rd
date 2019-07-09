@@ -5,7 +5,7 @@
 \title{Function for plotting the partial dependencies of the created NeuralNetwork}
 \usage{
 plot_partial_dependencies(neural_net, predictors = "all", probs = c(0,
-  0), type = "ggplot")
+  0), type = "ggplot", nrepetitions = 300)
 }
 \arguments{
 \item{neural_net}{The NeuralNetwork instance, see:
@@ -19,6 +19,9 @@ interval. If booth are 0, intervals will not be plotted.}
 
 \item{type}{Either 'ggplot' if the plot should be created using ggplot or
 'ggplotly' if plotly should be used.}
+
+\item{nrepetitions}{Number of samples used within bootstrap for confidence
+intervals.}
 }
 \value{
 Created figure

@@ -4,7 +4,7 @@
 \alias{create_functions}
 \title{Create functions used for calculating relevant metrics.}
 \usage{
-create_functions(probs, nrepititions)
+create_functions(probs, nrepetitions)
 }
 \description{
 Create functions used for calculating relevant metrics.

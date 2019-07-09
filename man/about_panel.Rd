@@ -2,11 +2,11 @@
 % Please edit documentation in R/shiny_ui.R
 \name{about_panel}
 \alias{about_panel}
-\title{Returns the about panel.}
+\title{Returns the about panel}
 \usage{
 about_panel()
 }
 \description{
-Returns the about panel.
+Returns the about panel
 }
 \keyword{internal}

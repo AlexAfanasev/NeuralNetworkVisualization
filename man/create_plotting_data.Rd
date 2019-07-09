@@ -4,7 +4,7 @@
 \alias{create_plotting_data}
 \title{Creates the plotting data.}
 \usage{
-create_plotting_data(grid, predictor, neural_net, probs, nrepititions)
+create_plotting_data(grid, predictor, neural_net, probs, nrepetitions)
 }
 \description{
 Creates the plotting data.
