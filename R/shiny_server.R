@@ -16,7 +16,7 @@ server <- function (session, input, output) {
         variables$neuralnet <- neural_network
         
         return(list(data = neural_network$neural_network$data,
-                    response = neural_network$dependent))
+                    variables =  model$neural_network$covariate))
       }
     })
     
@@ -25,8 +25,7 @@ server <- function (session, input, output) {
           identical(Dataset()$data, data.frame())) {
         return(NULL)
       }
-      columns <- names(Dataset()$data)
-      columns <- columns[columns != Dataset()$response]
+      columns <- colnames(Dataset()$variables)
       shiny::tagList(
       shiny::h4("Select predictors", style = "color:blue"),
       shinyWidgets::pickerInput(
