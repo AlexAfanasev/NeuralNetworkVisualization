@@ -42,7 +42,7 @@
 #' @name plot_partial_dependencies
 #' @export
 plot_partial_dependencies <- function (neural_net, predictors = "all",
-                                       probs = c(0, 0), type = "ggplot", nrepetitions = 300) {
+                                       probs = c(0, 0), type = "ggplot", nrepetitions = 20) {
     if (!all(probs == 0)) is_valid_probs(probs); is_valid_type(type)
     predictors <- get_predictors(neural_net, predictors)
     if (length(predictors) > 1) {

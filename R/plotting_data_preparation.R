@@ -15,7 +15,7 @@
 #' @name prepare_data
 #' @keywords internal
 prepare_data <- function (neural_net, predictor, probs = c(0.05, 0.95),
-                          nrepetitions = 300) {
+                          nrepetitions = 20) {
     grid <- create_grid(neural_net, predictor)
     plotting_data <- create_plotting_data(grid, predictor, neural_net, probs,
                                           nrepetitions)
@@ -52,7 +52,7 @@ create_plotting_data <- function (grid, predictor, neural_net, probs,
 #' Prepares the data with numerical dependent variable.
 #'
 #' @importFrom magrittr %>%
-#' @importFrom dplyr mutate summarize_at group_by ungroup
+#' @importFrom dplyr mutate summarize group_by ungroup
 #' @importFrom neuralnet compute
 #' @keywords internal
 prepare_data_numeric <- function (grid, predictor, neural_net, probs,
@@ -62,8 +62,31 @@ prepare_data_numeric <- function (grid, predictor, neural_net, probs,
         neural_net$neural_network, grid)$net.result)
     partial_dependence <- grid %>%
         group_by(!!predictor) %>%
-        summarize_at(vars(prediction), functions) %>%
+        summarize(yhat = mean(prediction)) %>%
         ungroup()
+    number_of_data_points <- nrow(neural_net$neural_network$data)
+    bootstrap_data <- matrix(nrow = nrow(partial_dependence),
+                             ncol = nrepetitions)
+    for (current_rep in 1:nrepetitions) {
+        print(current_rep)
+        indices <- sample(1:number_of_data_points, size = number_of_data_points,
+                          replace = TRUE)
+        resampled_data_set <- neural_net$neural_network$data[indices, ]
+        args <- c(list(f = neural_net$f, data = resampled_data_set,
+                       layers = neural_net$layers, scale = neural_net$scale),
+                  neural_net$additional)
+        new_neural_net <- do.call(NeuralNetwork, args)
+        grid <- grid %>% mutate(prediction = compute(
+            new_neural_net$neural_network, grid)$net.result)
+        new_partial_dependence <- grid %>%
+            group_by(!!predictor) %>%
+            summarize(yhat = mean(prediction)) %>%
+            ungroup()
+        bootstrap_data[, current_rep] <- new_partial_dependence$yhat
+    }
+    partial_dependence$yhat <- apply(bootstrap_data, 1, mean)
+    partial_dependence$lwr <- apply(bootstrap_data, 1, quantile, probs = 0.05)
+    partial_dependence$upr <- apply(bootstrap_data, 1, quantile, probs = 0.95)
     return(partial_dependence)
 }
 
@@ -88,9 +111,20 @@ prepare_data_categoric <- function (grid, predictor, neural_net, probs,
         mutate(class = str_replace(class, "_prediction", ""))
     partial_dependence <- grid  %>%
         group_by(class, !!predictor) %>%
-        summarize_at(vars(prediction), functions) %>%
+        summarize_at(vars(prediction), mean) %>%
         ungroup()
+    partial_dependence$lwr <- partial_dependence$mean
+    partial_dependence$upr <- partial_dependence$mean
     partial_dependence$class <- as.factor(partial_dependence$class)
+
+    for (current_rep in 1:nrepetitions) {
+        number_of_data_points <- nrow(neural_net$neural_network$data)
+        indices <- sample(1:number_of_data_points, size = number_of_data_points,
+                          replace = TRUE)
+
+        new_neural_net <- NeuralNetwork()
+    }
+
     return(partial_dependence)
 }
 

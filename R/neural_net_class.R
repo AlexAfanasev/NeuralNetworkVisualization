@@ -50,7 +50,7 @@ NeuralNetwork <- function (f, data, layers, scale = FALSE, ...) {
     return(structure(
         list(neural_network = neural_network,
              type = type, dependent = dependent, f = f, layers = layers,
-             additional = list(...)), class = "NeuralNetwork"))
+             scale = scale, additional = list(...)), class = "NeuralNetwork"))
 }
 
 #' Returrns the type for the dependent variable (numerical or categorical).

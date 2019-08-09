@@ -5,7 +5,7 @@
 \title{Prepares the data used for further plotting.}
 \usage{
 prepare_data(neural_net, predictor, probs = c(0.05, 0.95),
-  nrepetitions = 300)
+  nrepetitions = 20)
 }
 \arguments{
 \item{neural_net}{Fitted NeuralNetwork, see: \code{\link{NeuralNetwork}}}
