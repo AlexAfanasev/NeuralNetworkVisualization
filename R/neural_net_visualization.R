@@ -29,14 +29,16 @@
 #'
 #' # Example: Categoric
 #' library(datasets)
-#' neural_network <- NeuralNetwork(f = "Species ~ .", data = iris,
-#'                                 layers = c(10, 10), rep = 5, err.fct = "ce",
-#'                                 linear.output = FALSE, lifesign = "minimal",
-#'                                 stepmax = 1000000, threshold = 0.001)
-#' plot_partial_dependencies(neural_network, predictors = "Sepal.Length")
-#' plot_partial_dependencies(neural_network,
+#' model <- NeuralNetwork(
+#'    Species ~ Sepal.Length + Sepal.Width + Petal.Length + Petal.Width,
+#'    data = iris, layers = c(10, 10), rep = 5, err.fct = "ce",
+#'    linear.output = FALSE, lifesign = "minimal", stepmax = 1000000,
+#'    threshold = 0.001, scale = F)
+#'    
+#' plot_partial_dependencies(model, predictors = "Petal.Length")
+#' plot_partial_dependencies(model,
 #'                           predictors = c("Sepal.Length", "Petal.Length"))
-#' plot_partial_dependencies(neural_network, type = "ggplotly")
+#' plot_partial_dependencies(model, type = "ggplotly")
 #'
 #' @importFrom plotly ggplotly
 #' @name plot_partial_dependencies
