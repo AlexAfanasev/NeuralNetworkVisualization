@@ -11,7 +11,7 @@ model <- NeuralNetwork(medv ~ ., data = train, layers = c(5, 3),
                        scale = TRUE, linear.output = TRUE)
 
 plot_partial_dependencies(model, probs = c(0.1, 0.9))
-plot_partial_dependencies(model, predictors = "crim")
+plot_partial_dependencies(model, predictors = "crim", probs = c(0.05, 0.95))
 plot_partial_dependencies(model, predictors = c("crim", "age"),
                           type = "ggplotly", probs = c(0.05, 0.95))
 
