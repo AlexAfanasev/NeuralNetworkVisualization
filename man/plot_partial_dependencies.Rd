@@ -5,7 +5,7 @@
 \title{Function for plotting the partial dependencies of the created NeuralNetwork}
 \usage{
 plot_partial_dependencies(neural_net, predictors = "all", probs = c(0,
-  0), type = "ggplot", nrepetitions = 20)
+  0), type = "ggplot", nrepetitions = 50)
 }
 \arguments{
 \item{neural_net}{The NeuralNetwork instance, see:
