@@ -4,6 +4,28 @@
 #TODO implement visualization properly and do shiny
 
 
+#' rescale all selected variables
+#' @keywords internal
+rescale_total <- function(min, diff, predictor, data) {
+  data[predictor] <- data[[predictor]] * diff + min
+  return(data[predictor])
+}
+
+#' rescale all selected variables
+#' @importFrom purrr pmap_dfc
+#' @keywords internal
+#' 
+create_data <- function(neural_net){
+  input_data <- neural_net$neural_network$data
+  identifier <- names(input_data)[which(names(input_data) %in% rownames(neural_net$minmax))]
+  diff <- sapply(identifier, function(x) descale(x, neural_net,input_data))[1]
+  min <- sapply(identifier, function(x) descale(x, neural_net,input_data))[2]
+  data <- pmap_dfc(list(min,diff, identifier), ~ rescale_total(..1,..2,..3,input_data))
+  return(data)
+}
+
+
+
 #' change input data via change_variables and change_values
 #' @importFrom dplyr group_by
 #' @importFrom magittr %>%
@@ -50,6 +72,9 @@ group_scale_multiple <- function(data, predictor, predictor_value) {
                         ~ scale_change(.x, predictor, .y)))
   return(values)
 }
+
+
+
 
 #' create input grid
 #' @keywords internal
@@ -100,7 +125,7 @@ grid_categorical <- function(class, neural_input, cols_numeric, kind) {
     mean_input[c(class, index)] <- process_input %>% 
       group_modify(~ data.frame(t(colMeans(.x))))
   } else {
-    mean_input[c(class, index)] <-process_input %>% 
+    mean_input[c(class, index)] <- process_input %>% 
       group_modify(~ data.frame(t(colMedians(.x))))
   }
   return(mean_input) 
@@ -219,7 +244,7 @@ numeric_marg <- function(neural_net, data, predictor,
 } else {
   new_data[predictor] <- rep(predictor_values, rep)
 }
-  new_data$yhat <- compute(neural_net$neural_network, new_data)$net.result
+  new_data$yhat <- neuralnet::compute(neural_net$neural_network, new_data)$net.result
   new_data[predictor] <- sequence(predictor_value, rep, units)
   result <- data.frame(new_data[predictor], yhat = new_data$yhat)
   return(result)
@@ -234,26 +259,27 @@ numeric_marg <- function(neural_net, data, predictor,
 #' 
 
 categorical_marg <- function(neural_net, data, predictor,
-                            predictor_value, rep = 100, units = 1, kind = "mean",
+                            predictor_value, rep = 100, units = NULL, kind = "mean",
                             change_variables = NULL, change_values = NULL, 
                             class = NULL, type) {
   warning_message(kind, predictor_value, data, predictor, change_variables, change_values)
   mean_input <- make_grid(neural_net, kind, type = type, class)
   new_data <- grid_factor(neural_net, mean_input, class, rep,type = type)
   class_var <- sym(class)
-  if (! is.null(change_values) & ! is.null(change_variables)){ 
+  if (! is.null(change_values) & ! is.null(change_variables)) { 
     new_data <- change(data, change_variables, change_values, class, new_data, rep, 
                        type = type)}
   if (isTRUE(neural_net$scale)) {
-    data <- data %>% group_by(!!class_var)
+    data <- data %>% group_by(!! class_var)
     predictor_value_scale <- group_scale_multiple(data, predictor, predictor_value)
-    new_data = new_data %>% arrange(!!class_var)
+    new_data = new_data %>% arrange(!! class_var)
     new_data[predictor] = unlist(map2(predictor_value_scale, units,~ sequence(.x,rep,.y)))
   } else {
     new_data[predictor] <- rep(predictor_value, rep)
-    new_data = new_data %>% arrange(!!class_var)
+    new_data = new_data %>% arrange(!! class_var)
     new_data[predictor] <- unlist(map2(predictor_value, units,~ sequence(.x,rep,.y)))
   }
+  return(new_data)}
   result <- categ_prediction(neural_net, new_data, class, predictor, 
     predictor_value, rep)
   return(result)
@@ -270,8 +296,8 @@ categorical_marg <- function(neural_net, data, predictor,
 #' @keywords internal
 #' 
 categ_prediction = function(neural_net, new_data, class, predictor, 
-                            predictor_value, rep) {
-  prediction <- data.frame(compute(neural_net$neural_network, new_data)$net.result)
+                            predictor_value, rep, units) {
+  prediction <- data.frame(neuralnet::compute(neural_net$neural_network, new_data)$net.result)
   names(prediction) <- paste(neural_net$neural_network$model.list$response,
                              "_prediction", sep = "")
   new_data <- new_data %>%
@@ -279,7 +305,7 @@ categ_prediction = function(neural_net, new_data, class, predictor,
     gather(class, prediction, ends_with("prediction")) %>%
     mutate(class = str_replace(class, "_prediction", ""))
   new_data[predictor] <- unlist(map2(predictor_value, units,~ sequence(.x,rep,.y)))
-  new_data <- as.data.frame(new_data)
+  return(new_data)
   result <- new_data[c("class", predictor, "prediction")]
   names(result)[3] <- "yhat"
   return(result)
@@ -287,19 +313,21 @@ categ_prediction = function(neural_net, new_data, class, predictor,
 
 #' create plotting data for categorical variables
 #' @keywords internal
-prepare_data_repres <- function(neural_net, data, predictor,
+prepare_data_repres <- function(neural_net,predictor,
                                predictor_value, rep = 100, units = 1, kind = "mean",
                                change_variables = NULL, change_values = NULL, 
-                               class = NULL, type) {
+                               class = NULL) {
   type <- neural_net$type
+  data <- create_data(neural_net)
+  data <- cbind(neural_net$neural_network$data[class],data)
   if(type == "numerical") {
-    result <- numeric_marg(neural_net, data, predictor,
+    result <- numeric_marg(neural_net, data = data, predictor,
                            predictor_value, rep, units, kind,
                            change_variables, change_values, 
                            class, type = type)
   }
   if(type == "categorical") {
-    result <- categorical_marg(neural_net, data, predictor,
+    result <- categorical_marg(neural_net, data = data, predictor,
                                predictor_value, rep, units, kind,
                                change_variables, change_values, 
                                class, type = type)
@@ -314,7 +342,7 @@ prepare_data_repres <- function(neural_net, data, predictor,
 #' @importFrom tidyr gather
 #' @keywords internal
 
-plot_multiple <- function (neural_net, data,  predictor, predictor_value, 
+plot_multiple <- function (neural_net,  predictor, predictor_value, 
                            rep, units, kind, change_variables = NULL, 
                            change_values = NULL, class = NULL) {
   prediction_names <- ifelse(neural_net$type == "categorical",
