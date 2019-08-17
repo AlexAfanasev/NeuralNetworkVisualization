@@ -105,7 +105,7 @@ test_that("Creating NeuralNetwork for categorical dependent variable works", {
 test_that("Creating neural network for binary dependent variable works", {
     # load library for data
     library(faraway)
-
+    library(nnet)
     # prepares data for analysis
     pima$glucose[pima$glucose == 0] <- NA
     pima$diastolic[pima$diastolic == 0] <- NA
@@ -137,11 +137,16 @@ test_that("Creating neural network for binary dependent variable works", {
     maxs <- apply(train[, numeric_columns], 2, max)
     mins <- apply(train[, numeric_columns], 2, min)
 
+    identifier <- class.ind(scaled[["test"]])
+    rownames(identifier) <- rownames(scaled)
+    scaled <- cbind(scaled, identifier)
+
     # fit expected and test model
     set.seed(1)
-    nn <- neuralnet(test ~ pregnant + glucose + diastolic + triceps + insulin +
-                        bmi + diabetes + age, hidden = 2, data = scaled,
-                    linear.output = FALSE, threshold = 0.5, stepmax = 1e6)
+    nn <- neuralnet(Negative + Positive ~ pregnant + glucose + diastolic +
+                        triceps + insulin + bmi + diabetes + age, hidden = 2,
+                    data = scaled, linear.output = FALSE, threshold = 0.5,
+                    stepmax = 1e6)
 
     set.seed(1)
     model <- NeuralNetwork(test ~ pregnant + glucose + diastolic + triceps +

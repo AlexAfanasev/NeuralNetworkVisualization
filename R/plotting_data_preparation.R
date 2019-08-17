@@ -28,10 +28,10 @@ prepare_data <- function (neural_net, predictor, probs = c(0.05, 0.95),
 #' @importFrom tidyr crossing
 #' @keywords internal
 create_grid <- function (neural_net, predictor) {
-    grid_predictor <- select(neural_net$neural_network$data, !!predictor)
-    grid_input <- select(neural_net$neural_network$data, -!!predictor)
-    grid <- crossing(grid_predictor, grid_input)
-    return(grid)
+  grid_predictor <- select(neural_net$neural_network$data, !!predictor)
+  grid_input <- select(neural_net$neural_network$data, -!!predictor)
+  grid <- crossing(grid_predictor, grid_input)
+  return(grid)
 }
 
 #' Creates the plotting data.
@@ -39,26 +39,26 @@ create_grid <- function (neural_net, predictor) {
 #' @keywords internal
 create_plotting_data <- function (grid, predictor, neural_net, probs,
                                   nrepetitions) {
-    if (neural_net$type == "numerical") {
-        plotting_data <- prepare_data_numeric(grid, predictor, neural_net,
-                                              probs, nrepetitions)
-    } else {
-        plotting_data <- prepare_data_categoric(grid, predictor, neural_net,
-                                                probs, nrepetitions)
-    }
-    return(plotting_data)
+  if (neural_net$type == "numerical") {
+    plotting_data <- prepare_data_numeric(grid, predictor, neural_net,
+                                          probs, nrepetitions)
+  } else {
+    plotting_data <- prepare_data_categoric(grid, predictor, neural_net,
+                                            probs, nrepetitions)
+  }
+  return(plotting_data)
 }
 
 #' Returns the scale and the center of the predictor column.
 #'
 #' @keywords internal
 descale <- function(predictor, neural_net, grid){
-      identifier <- as.character(predictor) == (rownames(
-          neural_net$min_and_max_numeric_columns))
-      predictor_min <- neural_net$min_and_max_numeric_columns$min[identifier]
-      predictor_max <- neural_net$min_and_max_numeric_columns$max[identifier]
-      difference <- predictor_max - predictor_min
-      return(c(difference, predictor_min))
+    identifier <- as.character(predictor) == (rownames(
+        neural_net$min_and_max_numeric_columns))
+    predictor_min <- neural_net$min_and_max_numeric_columns$min[identifier]
+    predictor_max <- neural_net$min_and_max_numeric_columns$max[identifier]
+    difference <- predictor_max - predictor_min
+    return(c(difference, predictor_min))
 }
 
 #' Prepares the data with numerical dependent variable.
@@ -105,6 +105,7 @@ compute_mean_prediction_numeric <- function (grid, neural_net, predictor) {
         group_by(!!predictor) %>%
         summarize(yhat = mean(prediction)) %>%
         ungroup()
+
     return(partial_dependence)
 }
 
@@ -161,11 +162,18 @@ compute_mean_prediction_categoric <- function (grid, neural_net, predictor) {
         summarize_at(vars(prediction), mean) %>%
         rename(yhat = prediction) %>%
         ungroup()
+
     return(partial_dependence)
 }
 
 #' computes Bootstrap intervals
 #'
+#' @importFrom magrittr %>%
+#' @importFrom neuralnet compute
+#' @importFrom dplyr bind_cols mutate summarize_at group_by ends_with ungroup
+#' @importFrom tidyr gather
+#' @importFrom stringr str_replace
+#' @importFrom rlang sym
 #' @keywords internal
 compute_bootstrap_ci <- function (partial_dependence, grid, predictor,
                                   neural_net, probs, nrepetitions) {
@@ -198,4 +206,3 @@ compute_bootstrap_ci <- function (partial_dependence, grid, predictor,
                                                      quantile, probs = probs))
     return(partial_dependence)
 }
-

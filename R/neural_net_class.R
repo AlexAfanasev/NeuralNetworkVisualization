@@ -35,8 +35,6 @@
 #'    threshold = 0.001, scale = T)
 #' }
 #'
-#' @importFrom  neuralnet neuralnet
-#' @importFrom  nnet class.ind
 #' @name NeuralNetwork
 #' @export
 NeuralNetwork <- function (f, data, layers, scale = FALSE, ...) {
@@ -63,6 +61,7 @@ NeuralNetwork <- function (f, data, layers, scale = FALSE, ...) {
 }
 
 #' Returrns the type for the dependent variable (numerical or categorical).
+#'
 #' @keywords internal
 get_type <- function (data) {
   if (is.factor(data)) {
@@ -75,6 +74,7 @@ get_type <- function (data) {
 }
 
 #' Returns the scaled column.
+#'
 #' @keywords internal
 scale_column <- function(col){
   maxs <- max(col)
@@ -84,6 +84,7 @@ scale_column <- function(col){
 }
 
 #' Returns the min and max.
+#'
 #' @keywords internal
 min_max <- function (data) {
     mins <- apply(data, 2, min)
@@ -92,6 +93,7 @@ min_max <- function (data) {
 }
 
 #' Fits neural network for either numerical or categorical dependent variable.
+#'
 #' @keywords internal
 fit_neural_network <- function (f, data, layers, type, dependent, independent,
                                 ...) {
@@ -104,12 +106,17 @@ fit_neural_network <- function (f, data, layers, type, dependent, independent,
 }
 
 #' Fits neural network for numerical dependent variable.
+#'
+#' @importFrom  neuralnet neuralnet
 #' @keywords internal
 fit_neural_network_numeric <- function (f, data, layers, ...) {
   return(neuralnet(f, data = data, hidden = layers, ...))
 }
 
 #' Fits neural network for cateogircal dependent variable.
+#'
+#' @importFrom  neuralnet neuralnet
+#' @importFrom  nnet class.ind
 #' @keywords internal
 fit_neural_network_categorical <- function (f, data, layers, dependent,
                                             independent, ...) {
