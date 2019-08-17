@@ -9,5 +9,5 @@
 #' @name run_shiny_app
 #' @export
 run_shiny_app <- function () {
-    shinyApp(ui = create_ui(), server = server)
+    return(shinyApp(ui = create_ui(), server = server))
 }

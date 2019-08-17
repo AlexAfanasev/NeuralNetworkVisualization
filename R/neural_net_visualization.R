@@ -29,14 +29,16 @@
 #'
 #' # Example: Categoric
 #' library(datasets)
-#' neural_network <- NeuralNetwork(f = "Species ~ .", data = iris,
-#'                                 layers = c(10, 10), rep = 5, err.fct = "ce",
-#'                                 linear.output = FALSE, lifesign = "minimal",
-#'                                 stepmax = 1000000, threshold = 0.001)
-#' plot_partial_dependencies(neural_network, predictors = "Sepal.Length")
-#' plot_partial_dependencies(neural_network,
+#' model <- NeuralNetwork(
+#'    Species ~ Sepal.Length + Sepal.Width + Petal.Length + Petal.Width,
+#'    data = iris, layers = c(10, 10), rep = 5, err.fct = "ce",
+#'    linear.output = FALSE, lifesign = "minimal", stepmax = 1000000,
+#'    threshold = 0.001, scale = F)
+#'
+#' plot_partial_dependencies(model, predictors = "Petal.Length")
+#' plot_partial_dependencies(model,
 #'                           predictors = c("Sepal.Length", "Petal.Length"))
-#' plot_partial_dependencies(neural_network, type = "ggplotly")
+#' plot_partial_dependencies(model, type = "ggplotly")
 #'
 #' @importFrom plotly ggplotly
 #' @name plot_partial_dependencies
@@ -119,10 +121,9 @@ get_predictors <- function (neural_net, predictors) {
 plot_multiple <- function (neural_net, predictors, probs, nrepetitions) {
     prediction_names <- ifelse(neural_net$type == "categorical",
                                yes = 2, no = 1)
-    plan(multiprocess)
+    #plan(multiprocess)
     prepared_data <- predictors %>%
         future_map(~ prepare_data(neural_net, .x, probs, nrepetitions)) %>%
-        #map(~ prepare_data(neural_net, .x, probs, nrepetitions)) %>%
         map(~ gather(.x, "predictor", "values", prediction_names)) %>%
         bind_rows()
     if (neural_net$type == "numerical") {

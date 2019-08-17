@@ -6,11 +6,10 @@ test_that("Plotting with numerical dependent variable works", {
 
     set.seed(1)
     model <- NeuralNetwork(medv ~ ., data = train, layers = c(5, 3),
-                           scale = TRUE, linear.output = TRUE)
+                           scale = TRUE, linear.output = TRUE, threshold = 0.5)
 
-    expect_error(plot_partial_dependencies(model, nrepetitions = 5), NA)
-    expect_error(plot_partial_dependencies(
-        model, predictors = "crim", nrepetitions = 5), NA)
+    expect_error(plot_partial_dependencies(model), NA)
+    expect_error(plot_partial_dependencies(model, predictors = "crim"), NA)
     expect_error(plot_partial_dependencies(
         model, predictors = "crim", type = "ggplotly", probs = c(0.2, 0.8),
         nrepetitions = 5), NA)
@@ -18,8 +17,7 @@ test_that("Plotting with numerical dependent variable works", {
         model, predictors = c("crim", "age"), probs = c(0.1, 0.9),
         nrepetitions = 5), NA)
     expect_error(plot_partial_dependencies(
-        model, predictors = c("crim", "age"), type = "ggplotly",
-        nrepetitions = 5), NA)
+        model, predictors = c("crim", "age"), type = "ggplotly"), NA)
 
     expect_error(plot_partial_dependencies(
         model, predictors = c("crim", "all")))
@@ -37,38 +35,29 @@ test_that("Plotting with numerical dependent variable works", {
 test_that("Plotting with categorical dependent variable works", {
     library(datasets)
     data("iris")
-    iris$setosa <- iris$Species=="setosa"
-    iris$setosa <- iris$setosa + 0
-    iris$versicolor <- iris$Species == "versicolor"
-    iris$versicolor <- iris$versicolor + 0
-    iris$virginica <- iris$Species == "virginica"
-    iris$virginica <- iris$virginica + 0
     index <- sample(x = nrow(iris), size = nrow(iris)*0.5)
-    train_test <- iris[index,]
-    train_model <- train_test[, !(names(train_test) %in%
-                                      c("setosa", "versicolor", "virginica"))]
+    train_model <- iris[index,]
+
     set.seed(1)
     model <- NeuralNetwork(
         Species ~ Sepal.Length + Sepal.Width + Petal.Length + Petal.Width,
-        data = train_model, layers = c(10, 10), rep = 5, err.fct = "ce",
-        linear.output = FALSE, lifesign = "minimal", stepmax = 1000000,
-        threshold = 0.001)
+        data = train_model, layers = c(5, 5), rep = 5, err.fct = "ce",
+        linear.output = FALSE, stepmax = 1000000, threshold = 0.5)
 
-    expect_error(plot_partial_dependencies(model, nrepetitions = 5), NA)
+    expect_error(plot_partial_dependencies(model), NA)
     expect_error(plot_partial_dependencies(
-        model, predictors = "Sepal.Length", nrepetitions = 5), NA)
+        model, predictors = "Sepal.Length"), NA)
     expect_error(plot_partial_dependencies(
         model, predictors = "Sepal.Length", type = "ggplotly",
         probs = c(0.2, 0.8), nrepetitions = 5), NA)
     expect_error(plot_partial_dependencies(
-        model, predictors = c("Sepal.Length", "Petal.Length"),
-        nrepetitions = 5), NA)
+        model, predictors = c("Sepal.Length", "Petal.Length")), NA)
     expect_error(plot_partial_dependencies(
         model, predictors = c("Sepal.Length", "Petal.Length"),
         probs = c(0.1, 0.9), nrepetitions = 5), NA)
     expect_error(plot_partial_dependencies(
         model, predictors = c("Sepal.Length", "Petal.Length"),
-        type = "ggplotly", nrepetitions = 5), NA)
+        type = "ggplotly"), NA)
 
     expect_error(plot_partial_dependencies(
         model, predictors = c("Sepal.Length", "all")))
@@ -84,17 +73,14 @@ test_that("Plotting with categorical dependent variable works", {
 
 test_that("Plotting with binary dependent variable works", {
     library(faraway)
-    library(DMwR)
     pima$glucose[pima$glucose == 0] <- NA
     pima$diastolic[pima$diastolic == 0] <- NA
     pima$triceps[pima$triceps == 0] <- NA
     pima$insulin[pima$insulin == 0] <- NA
     pima$bmi[pima$bmi == 0] <- NA
-    pima <- pima[-manyNAs(pima),]
-    pima <- knnImputation(pima, k = 10)
+    pima <- pima[complete.cases(pima), ]
     pima$test <- as.factor(pima$test)
     levels(pima$test) <- c("Negative", "Positive")
-    pima[, 9] <- unclass(pima[, 9])
     pima_size <- floor(0.75 * nrow(pima))
     index <- sample(seq_len(nrow(pima)), size = pima_size)
     train <- pima[index, ]
@@ -102,14 +88,13 @@ test_that("Plotting with binary dependent variable works", {
     set.seed(1)
     model <- NeuralNetwork(test ~ pregnant + glucose + diastolic + triceps +
                                insulin + bmi + diabetes + age,
-                           data = train, layers = 4,
-                           scale = TRUE, linear.output = TRUE)
+                           data = train, layers = 2, linear.output = FALSE,
+                           threshold = 0.5, stepmax = 1e6)
 
-    expect_error(plot_partial_dependencies(model, nrepetitions = 5), NA)
+    expect_error(plot_partial_dependencies(model), NA)
+    expect_error(plot_partial_dependencies(model, predictors = "glucose"), NA)
     expect_error(plot_partial_dependencies(
-        model, predictors = "glucose", nrepetitions = 5), NA)
-    expect_error(plot_partial_dependencies(
-        model, predictors = c("pregnant", "diastolic"), nrepetitions = 5), NA)
+        model, predictors = c("pregnant", "diastolic")), NA)
     expect_error(plot_partial_dependencies(
         model, predictors = "glucose", type = "ggplotly",
         probs = c(0.2, 0.8), nrepetitions = 5), NA)
@@ -117,8 +102,7 @@ test_that("Plotting with binary dependent variable works", {
         model, predictors = c("pregnant", "diastolic"),
         probs = c(0.1, 0.9), nrepetitions = 5), NA)
     expect_error(plot_partial_dependencies(
-        model, predictors = c("pregnant", "diastolic"), type = "ggplotly",
-        nrepetitions = 5), NA)
+        model, predictors = c("pregnant", "diastolic"), type = "ggplotly"), NA)
 
     expect_error(plot_partial_dependencies(
         model, predictors = c("pregnant", "all")))

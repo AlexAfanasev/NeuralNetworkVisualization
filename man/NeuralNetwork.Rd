@@ -21,8 +21,8 @@ categorical, binary and numerical data.}
 }
 \value{
 NeuralNetwork class containing the neuralnet, type of dependent
-  variable, name of dependent variable, set layers and the additional
-  parameters provided.
+  variable, name of dependent variable, layers, min and max of each numeric
+  column and the additional parameters provided.
 }
 \description{
 \code{NeuralNetwork} Returns the trained neural network
@@ -41,9 +41,11 @@ neural_network <- NeuralNetwork(f = "medv ~ .", data = Boston,
 
 # Example: Categoric
 library(datasets)
-neural_network <- NeuralNetwork(f = "Species ~ .", data = iris,
-                                layers = c(10, 10), rep = 5, err.fct = "ce",
-                                linear.output = FALSE, lifesign = "minimal",
-                                stepmax = 1000000, threshold = 0.001)
+model <- NeuralNetwork(
+   Species ~ Sepal.Length + Sepal.Width + Petal.Length + Petal.Width,
+   data = iris, layers = c(10, 10), rep = 5, err.fct = "ce",
+   linear.output = FALSE, lifesign = "minimal", stepmax = 1000000,
+   threshold = 0.001, scale = T)
 }
+
 }

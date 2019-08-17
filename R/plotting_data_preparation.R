@@ -49,22 +49,38 @@ create_plotting_data <- function (grid, predictor, neural_net, probs,
     return(plotting_data)
 }
 
+#' Returns the scale and the center of the predictor column.
+#'
+#' @keywords internal
+descale <- function(predictor, neural_net, grid){
+      identifier <- as.character(predictor) == (rownames(
+          neural_net$min_and_max_numeric_columns))
+      predictor_min <- neural_net$min_and_max_numeric_columns$min[identifier]
+      predictor_max <- neural_net$min_and_max_numeric_columns$max[identifier]
+      difference <- predictor_max - predictor_min
+      return(c(difference, predictor_min))
+}
+
 #' Prepares the data with numerical dependent variable.
 #'
+#' @importFrom magrittr %>%
+#' @importFrom dplyr mutate summarize_at group_by ungroup
+#' @importFrom neuralnet compute
 #' @keywords internal
 prepare_data_numeric <- function (grid, predictor, neural_net, probs,
                                   nrepetitions) {
     partial_dependence <- compute_mean_prediction_numeric(
         grid, neural_net, predictor)
+
     if (all(probs == 0) == TRUE) {
         partial_dependence[, c("lwr", "upr")] <- partial_dependence$yhat
-        return(partial_dependence)
     } else {
         partial_dependence <- compute_bootstrap_ci(
             partial_dependence, grid, predictor, neural_net, probs,
             nrepetitions)
-        return(partial_dependence)
     }
+
+    return(partial_dependence)
 }
 
 #' Computes mean prediction for numeric response
@@ -73,16 +89,25 @@ prepare_data_numeric <- function (grid, predictor, neural_net, probs,
 #' @importFrom dplyr mutate group_by summarize
 #' @importFrom plotly ungroup
 #' @importFrom neuralnet compute
+#' @importFrom rlang sym
 #' @keywords internal
 compute_mean_prediction_numeric <- function (grid, neural_net, predictor) {
     grid <- grid %>% mutate(prediction = compute(
-        neural_net$neural_network, grid)$net.result)
+             neural_net$neural_network, grid)$net.result)
+
+    if (isTRUE(neural_net$scale)) {
+        scale <- descale(predictor, neural_net, grid)
+        grid <- grid %>% mutate(!!predictor := !!predictor*scale[1] +
+                                    scale[2])
+    }
+
     partial_dependence <- grid %>%
         group_by(!!predictor) %>%
         summarize(yhat = mean(prediction)) %>%
         ungroup()
     return(partial_dependence)
 }
+
 
 #' Prepares the data with categorical dependent variable.
 #'
@@ -91,6 +116,7 @@ prepare_data_categoric <- function (grid, predictor, neural_net, probs,
                                     nrepetitions) {
     partial_dependence <- compute_mean_prediction_categoric(
         grid, neural_net, predictor)
+
     if (all(probs == 0) == TRUE) {
         partial_dependence[, c("lwr", "upr")] <- partial_dependence$yhat
     } else {
@@ -98,6 +124,7 @@ prepare_data_categoric <- function (grid, predictor, neural_net, probs,
             partial_dependence, grid, predictor, neural_net, probs,
             nrepetitions)
     }
+
     partial_dependence$class <- as.factor(partial_dependence$class)
     return(partial_dependence)
 }
@@ -111,6 +138,7 @@ prepare_data_categoric <- function (grid, predictor, neural_net, probs,
 #' @importFrom ggplot2 vars
 #' @importFrom plotly ungroup
 #' @importFrom neuralnet compute
+#' @importFrom rlang sym
 #' @keywords internal
 compute_mean_prediction_categoric <- function (grid, neural_net, predictor) {
     prediction <- as.data.frame(
@@ -121,6 +149,13 @@ compute_mean_prediction_categoric <- function (grid, neural_net, predictor) {
         bind_cols(prediction) %>%
         gather(class, prediction, ends_with("prediction")) %>%
         mutate(class = str_replace(class, "_prediction", ""))
+
+    if(isTRUE(neural_net$scale)){
+        scale <- descale(predictor, neural_net, grid)
+        grid <- grid %>% mutate(!!predictor := !!predictor*scale[1] +
+                                    scale[2])
+    }
+
     partial_dependence <- grid  %>%
         group_by(class, !!predictor) %>%
         summarize_at(vars(prediction), mean) %>%
@@ -163,3 +198,4 @@ compute_bootstrap_ci <- function (partial_dependence, grid, predictor,
                                                      quantile, probs = probs))
     return(partial_dependence)
 }
+
