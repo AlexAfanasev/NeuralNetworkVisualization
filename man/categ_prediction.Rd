@@ -2,12 +2,12 @@
 % Please edit documentation in R/neural_net_representative.R
 \name{categ_prediction}
 \alias{categ_prediction}
-\title{create prediction data for categorical variables}
+\title{Create prediction data for categorical variables}
 \usage{
 categ_prediction(neural_net, new_data, class, predictor, predictor_value,
   rep, units)
 }
 \description{
-create prediction data for categorical variables
+Create prediction data for categorical variables
 }
 \keyword{internal}

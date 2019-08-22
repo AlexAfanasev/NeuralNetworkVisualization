@@ -2,13 +2,13 @@
 % Please edit documentation in R/neural_net_representative.R
 \name{numeric_marg}
 \alias{numeric_marg}
-\title{create plotting data for numeric}
+\title{Create plotting data for numeric}
 \usage{
 numeric_marg(neural_net, data, predictor, predictor_value, rep = 100,
   units = 1, kind = "mean", change_variables = NULL,
   change_values = NULL, class = NULL, type = NULL)
 }
 \description{
-create plotting data for numeric
+Create plotting data for numeric
 }
 \keyword{internal}

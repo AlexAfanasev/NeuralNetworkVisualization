@@ -20,7 +20,7 @@
 #'
 #' @examples
 #' \dontrun{
-#' # Example: Numeric or Binary
+#' # Example: Numeric
 #' library(MASS)
 #' neural_network <- NeuralNetwork(f = "medv ~ .", data = Boston,
 #'                                 layers = c(5, 3), scale = TRUE,
@@ -38,10 +38,8 @@
 #' @name NeuralNetwork
 #' @export
 NeuralNetwork <- function (f, data, layers, scale = FALSE, ...) {
-    f <- as.formula(f)
-    row.names(data) <- NULL
-    dependent <- all.vars(f[[2]])
-    independent <- all.vars(f[[3]])
+    f <- as.formula(f); row.names(data) <- NULL
+    dependent <- all.vars(f[[2]]); independent <- all.vars(f[[3]])
     type <- get_type(data[[dependent]])
 
     numeric_columns <- sapply(data, is.numeric)
@@ -64,26 +62,25 @@ NeuralNetwork <- function (f, data, layers, scale = FALSE, ...) {
 #'
 #' @keywords internal
 get_type <- function (data) {
-  if (is.factor(data)) {
-      return("categorical")
-  } else if (is.numeric(data)) {
-      return("numerical")
-  } else {
-      stop("Dependent variable is not of class factor or numeric!")
-  }
+    if (is.factor(data)) {
+        return("categorical")
+    } else if (is.numeric(data)) {
+        return("numerical")
+    } else {
+        stop("Dependent variable is not of class factor or numeric!")
+    }
 }
 
 #' Returns the scaled column.
 #'
 #' @keywords internal
 scale_column <- function(col){
-  maxs <- max(col)
-  mins <- min(col)
-  scaled_column <- scale(col, center = mins, scale = maxs - mins)
-  return(scaled_column)
+    maxs <- max(col)
+    mins <- min(col)
+    return(scale(col, center = mins, scale = maxs - mins))
 }
 
-#' Returns the min and max.
+#' Returns the min and max of a data.frame.
 #'
 #' @keywords internal
 min_max <- function (data) {
@@ -97,12 +94,12 @@ min_max <- function (data) {
 #' @keywords internal
 fit_neural_network <- function (f, data, layers, type, dependent, independent,
                                 ...) {
-  if (type == "numerical") {
-      return(fit_neural_network_numeric(f, data, layers, ...))
-  } else if (type == "categorical") {
-      fit_neural_network_categorical(f, data, layers, dependent, independent,
-                                     ...)
-  }
+    if (type == "numerical") {
+        return(fit_neural_network_numeric(f, data, layers, ...))
+    } else if (type == "categorical") {
+        fit_neural_network_categorical(f, data, layers, dependent, independent,
+                                       ...)
+    }
 }
 
 #' Fits neural network for numerical dependent variable.
@@ -110,7 +107,7 @@ fit_neural_network <- function (f, data, layers, type, dependent, independent,
 #' @importFrom  neuralnet neuralnet
 #' @keywords internal
 fit_neural_network_numeric <- function (f, data, layers, ...) {
-  return(neuralnet(f, data = data, hidden = layers, ...))
+    return(neuralnet(f, data = data, hidden = layers, ...))
 }
 
 #' Fits neural network for cateogircal dependent variable.
@@ -120,12 +117,17 @@ fit_neural_network_numeric <- function (f, data, layers, ...) {
 #' @keywords internal
 fit_neural_network_categorical <- function (f, data, layers, dependent,
                                             independent, ...) {
-  identifier <- class.ind(data[[dependent]])
-  rownames(identifier) <- rownames(data)
-  if (!(all(levels(data[[dependent]]) %in% colnames(data)))) {
-      data <- cbind(data, identifier)
-  }
-  f <- as.formula(paste(paste(levels(data[[dependent]]), collapse = "+"),
-                        "~", paste(independent, collapse = "+"), sep = " "))
-  return(neuralnet(f, data = data, hidden = layers, ...))
+    identifier <- class.ind(data[[dependent]])
+    rownames(identifier) <- rownames(data)
+
+    if (!(all(levels(data[[dependent]]) %in% colnames(data)))) {
+        data <- cbind(data, identifier)
+    }
+
+    f <- as.formula(paste(paste(levels(data[[dependent]]), collapse = "+"),
+                          "~", paste(independent, collapse = "+"), sep = " "))
+    return(neuralnet(f, data = data, hidden = layers, ...))
 }
+
+# TODO: add functions for adding dummy variables for the factor independent variables
+# call these functions in fit_neural_network!

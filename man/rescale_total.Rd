@@ -2,11 +2,11 @@
 % Please edit documentation in R/neural_net_representative.R
 \name{rescale_total}
 \alias{rescale_total}
-\title{rescale all selected variables}
+\title{Rescale all selected variables}
 \usage{
 rescale_total(min, diff, predictor, data)
 }
 \description{
-rescale all selected variables
+Rescale all selected variables
 }
 \keyword{internal}

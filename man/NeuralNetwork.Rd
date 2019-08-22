@@ -33,7 +33,7 @@ plot_partial_dependencies method for plotting marginal effects.
 }
 \examples{
 \dontrun{
-# Example: Numeric or Binary
+# Example: Numeric
 library(MASS)
 neural_network <- NeuralNetwork(f = "medv ~ .", data = Boston,
                                 layers = c(5, 3), scale = TRUE,

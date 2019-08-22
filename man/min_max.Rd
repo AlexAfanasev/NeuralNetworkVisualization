@@ -2,11 +2,11 @@
 % Please edit documentation in R/neural_net_class.R
 \name{min_max}
 \alias{min_max}
-\title{Returns the min and max.}
+\title{Returns the min and max of a data.frame.}
 \usage{
 min_max(data)
 }
 \description{
-Returns the min and max.
+Returns the min and max of a data.frame.
 }
 \keyword{internal}

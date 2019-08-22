@@ -1,26 +1,27 @@
-#' Returns the about panel
+#' Returns the about panel.
 #'
 #' @import shiny
 #' @keywords internal
 about_panel <- function () {
-    about <- tabPanel("About",
-                      "Here we need to add the documentation for the shiny app")
+    about <- tabPanel(
+        "About",
+        "Here we need to add the documentation for the shiny app")
     return(about)
 }
 
-#' Returns the upload nn panel.
+#' Returns the settings panel.
 #'
 #' @import shiny
 #' @import shinyWidgets
 #' @keywords internal
 settings_panel <- function () {
-    upload_panel <- tabPanel("Settings",
-                             h4("Upload NeuralNetwork", style = "color:blue"),
-                             fileInput("datafile", "Choose NeuralNetwork File",
-                                       multiple = FALSE),
-                             h4("Visualization Settings", style = "color:blue"),
-                             uiOutput("networkplotting"),
-                             actionBttn("go", "Press to plot!"))
+    upload_panel <- tabPanel(
+        "Settings",
+        h4("Upload NeuralNetwork", style = "color:blue"),
+        fileInput("datafile", "Choose NeuralNetwork File", multiple = FALSE),
+        h4("Visualization Settings", style = "color:blue"),
+        uiOutput("networkplotting"),
+        actionBttn("go", "Press to plot!"))
     return(upload_panel)
 }
 
@@ -30,15 +31,13 @@ settings_panel <- function () {
 #' @importFrom plotly plotlyOutput
 #' @keywords internal
 visualization_panel <- function () {
-    current_visualization_panel <- tabPanel("Visualization",
-                                            plotlyOutput("plot",
-                                                         width = "100%",
-                                                         height = "800"))
+    current_visualization_panel <- tabPanel(
+        "Visualization",
+        plotlyOutput("plot", width = "100%", height = "800"))
     return(current_visualization_panel)
-
 }
 
-#' Creates shiny app ui!
+#' Creates shiny app ui
 #'
 #' @import shiny
 #' @keywords internal

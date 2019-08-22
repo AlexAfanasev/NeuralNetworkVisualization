@@ -2,11 +2,11 @@
 % Please edit documentation in R/neural_net_representative.R
 \name{group_scale}
 \alias{group_scale}
-\title{scale grouped datasets}
+\title{Scales grouped datasets}
 \usage{
 group_scale(data, change_variables, change_values)
 }
 \description{
-scale grouped datasets
+Scales grouped datasets
 }
 \keyword{internal}

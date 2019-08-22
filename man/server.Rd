@@ -2,11 +2,11 @@
 % Please edit documentation in R/shiny_server.R
 \name{server}
 \alias{server}
-\title{Returns the about panel.}
+\title{Returns the shiny app server.}
 \usage{
 server(session, input, output)
 }
 \description{
-Returns the about panel.
+Returns the shiny app server.
 }
 \keyword{internal}

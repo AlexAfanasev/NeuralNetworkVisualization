@@ -2,11 +2,11 @@
 % Please edit documentation in R/neural_net_representative.R
 \name{mode}
 \alias{mode}
-\title{mode}
+\title{Mode}
 \usage{
 mode(x)
 }
 \description{
-mode
+Mode
 }
 \keyword{internal}

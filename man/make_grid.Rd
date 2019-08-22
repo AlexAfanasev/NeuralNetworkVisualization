@@ -2,11 +2,11 @@
 % Please edit documentation in R/neural_net_representative.R
 \name{make_grid}
 \alias{make_grid}
-\title{create input grid}
+\title{Create input grid}
 \usage{
 make_grid(neural_net, kind, class = NULL, type)
 }
 \description{
-create input grid
+Create input grid
 }
 \keyword{internal}

@@ -1,4 +1,4 @@
-#' Returns the about panel.
+#' Returns the shiny app server.
 #'
 #' @import shiny
 #' @import shinyWidgets
@@ -8,15 +8,16 @@ server <- function (session, input, output) {
     variables <- reactiveValues(model = NULL)
 
     Dataset <- reactive({
-      infile <- input$datafile
-      if (is.null(infile)) {
-          return(NULL)
-      } else {
-          model <- readRDS(infile$datapath)
-          variables$model <- model
-          return(list(data = model$neural_network$data,
-                      variables =  model$neural_network$covariate))
-      }
+        infile <- input$datafile
+
+        if (is.null(infile)) {
+            return(NULL)
+        } else {
+            model <- readRDS(infile$datapath)
+            variables$model <- model
+            return(list(data = model$neural_network$data,
+                        variables =  model$neural_network$covariate))
+        }
     })
 
     output$networkplotting <- renderUI({
@@ -26,6 +27,7 @@ server <- function (session, input, output) {
         }
 
         columns <- colnames(Dataset()$variables)
+
         tagList(
             h4("Select predictors", style = "color:blue"),
             pickerInput(
@@ -54,24 +56,24 @@ server <- function (session, input, output) {
                          interval", value = 50))
     })
 
-    plot <- eventReactive(
-        input$go,{
-            if (!is.null(input$plotting) & !is.null(variables$model)) {
-                print("start plotting")
-                start <- Sys.time()
-                my_plot <- plot_partial_dependencies(
-                    variables$model, input$plotting, type = "ggplotly",
-                    probs = c(input$lower, input$upper),
-                    nrepetitions = input$nrepetitions)
-                end <- Sys.time()
-                print(paste("Finished plotting, Duration: ", end - start))
-                return(my_plot)
-            } else {
-                print("empty plot")
-                return()
-            }
+    plot <- eventReactive(input$go, {
+        if (!is.null(input$plotting) && !is.null(variables$model)) {
+            print("start plotting")
+            start <- Sys.time()
+
+            my_plot <- plot_partial_dependencies(
+                variables$model, input$plotting, type = "ggplotly",
+                probs = c(input$lower, input$upper),
+                nrepetitions = input$nrepetitions)
+
+            end <- Sys.time()
+            print(paste("Finished plotting, Duration: ", end - start))
+            return(my_plot)
+        } else {
+            print("empty plot")
+            return()
         }
-    )
+    })
 
     output$plot <- renderPlotly({
         plot()

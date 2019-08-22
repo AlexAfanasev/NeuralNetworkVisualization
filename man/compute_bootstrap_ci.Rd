@@ -2,12 +2,12 @@
 % Please edit documentation in R/plotting_data_preparation.R
 \name{compute_bootstrap_ci}
 \alias{compute_bootstrap_ci}
-\title{computes Bootstrap intervals}
+\title{computes Bootstrap intervals.}
 \usage{
 compute_bootstrap_ci(partial_dependence, grid, predictor, neural_net,
   probs, nrepetitions)
 }
 \description{
-computes Bootstrap intervals
+computes Bootstrap intervals.
 }
 \keyword{internal}

@@ -13,7 +13,7 @@ prepare_data(neural_net, predictor, probs = c(0.05, 0.95),
 \item{predictor}{Predictor for which to prepare the plotting data (predictor
 should be transformed with sym).}
 
-\item{probs}{Vector of ower and upper bound probabilities for the confidence
+\item{probs}{Vector of lower and upper bound probabilities for the confidence
 interval.}
 
 \item{nrepetitions}{Number of samples used within bootstrap for confidence

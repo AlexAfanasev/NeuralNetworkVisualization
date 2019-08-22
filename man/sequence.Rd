@@ -2,11 +2,11 @@
 % Please edit documentation in R/neural_net_representative.R
 \name{sequence}
 \alias{sequence}
-\title{create sequence for prediction}
+\title{Create sequence for prediction}
 \usage{
 sequence(x, rep, units)
 }
 \description{
-create sequence for prediction
+Create sequence for prediction
 }
 \keyword{internal}

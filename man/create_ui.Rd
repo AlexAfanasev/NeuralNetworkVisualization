@@ -2,11 +2,11 @@
 % Please edit documentation in R/shiny_ui.R
 \name{create_ui}
 \alias{create_ui}
-\title{Creates shiny app ui!}
+\title{Creates shiny app ui}
 \usage{
 create_ui()
 }
 \description{
-Creates shiny app ui!
+Creates shiny app ui
 }
 \keyword{internal}

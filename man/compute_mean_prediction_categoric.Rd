@@ -2,11 +2,11 @@
 % Please edit documentation in R/plotting_data_preparation.R
 \name{compute_mean_prediction_categoric}
 \alias{compute_mean_prediction_categoric}
-\title{Computes mean prediction for categoric response}
+\title{Computes mean prediction for categoric response.}
 \usage{
 compute_mean_prediction_categoric(grid, neural_net, predictor)
 }
 \description{
-Computes mean prediction for categoric response
+Computes mean prediction for categoric response.
 }
 \keyword{internal}

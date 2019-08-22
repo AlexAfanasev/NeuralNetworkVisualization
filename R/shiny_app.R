@@ -1,4 +1,4 @@
-#' Run the shiny app for visualizing the marginal effects of the NeuralNewtork
+#' Run the shiny app.
 #'
 #' @examples
 #' \dontrun{

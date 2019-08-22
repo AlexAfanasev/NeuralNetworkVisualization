@@ -2,11 +2,11 @@
 % Please edit documentation in R/neural_net_representative.R
 \name{scale_change}
 \alias{scale_change}
-\title{scale change_variables}
+\title{Scale change_variables}
 \usage{
 scale_change(data, change_variables, change_values)
 }
 \description{
-scale change_variables
+Scale change_variables
 }
 \keyword{internal}

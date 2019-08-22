@@ -2,12 +2,12 @@
 % Please edit documentation in R/shiny_app.R
 \name{run_shiny_app}
 \alias{run_shiny_app}
-\title{Run the shiny app for visualizing the marginal effects of the NeuralNewtork}
+\title{Run the shiny app.}
 \usage{
 run_shiny_app()
 }
 \description{
-Run the shiny app for visualizing the marginal effects of the NeuralNewtork
+Run the shiny app.
 }
 \examples{
 \dontrun{

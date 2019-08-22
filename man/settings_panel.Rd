@@ -2,11 +2,11 @@
 % Please edit documentation in R/shiny_ui.R
 \name{settings_panel}
 \alias{settings_panel}
-\title{Returns the upload nn panel.}
+\title{Returns the settings panel.}
 \usage{
 settings_panel()
 }
 \description{
-Returns the upload nn panel.
+Returns the settings panel.
 }
 \keyword{internal}

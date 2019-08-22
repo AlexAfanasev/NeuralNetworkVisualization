@@ -2,11 +2,11 @@
 % Please edit documentation in R/neural_net_representative.R
 \name{change}
 \alias{change}
-\title{change input data via change_variables and change_values}
+\title{Change input data via change_variables and change_values}
 \usage{
 change(data, change_variables, change_values, class, new_data, rep, type)
 }
 \description{
-change input data via change_variables and change_values
+Change input data via change_variables and change_values
 }
 \keyword{internal}

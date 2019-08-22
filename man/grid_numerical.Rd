@@ -2,11 +2,11 @@
 % Please edit documentation in R/neural_net_representative.R
 \name{grid_numerical}
 \alias{grid_numerical}
-\title{customize grid for numeric variables}
+\title{Customize grid for numeric variables}
 \usage{
 grid_numerical(neural_input, cols_numeric, kind)
 }
 \description{
-customize grid for numeric variables
+Customize grid for numeric variables
 }
 \keyword{internal}

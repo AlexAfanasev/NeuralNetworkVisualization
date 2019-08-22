@@ -2,11 +2,11 @@
 % Please edit documentation in R/neural_net_representative.R
 \name{colMedians}
 \alias{colMedians}
-\title{columnwise medians}
+\title{Columnwise medians}
 \usage{
 colMedians(x)
 }
 \description{
-columnwise medians
+Columnwise medians
 }
 \keyword{internal}

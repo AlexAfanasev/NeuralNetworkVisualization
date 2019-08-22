@@ -2,13 +2,13 @@
 % Please edit documentation in R/neural_net_representative.R
 \name{prepare_data_repres}
 \alias{prepare_data_repres}
-\title{create plotting data for categorical variables}
+\title{create plotting data for categorical and numerical variables}
 \usage{
 prepare_data_repres(neural_net, predictor, predictor_value, rep = 100,
   units = 1, kind = "mean", change_variables = NULL,
   change_values = NULL, class = NULL)
 }
 \description{
-create plotting data for categorical variables
+create plotting data for categorical and numerical variables
 }
 \keyword{internal}

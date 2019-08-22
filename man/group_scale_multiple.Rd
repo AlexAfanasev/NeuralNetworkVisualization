@@ -2,11 +2,11 @@
 % Please edit documentation in R/neural_net_representative.R
 \name{group_scale_multiple}
 \alias{group_scale_multiple}
-\title{scale grouped datasets, multiple datasets at once}
+\title{Scale grouped datasets, multiple datasets at once}
 \usage{
 group_scale_multiple(data, predictor, predictor_value)
 }
 \description{
-scale grouped datasets, multiple datasets at once
+Scale grouped datasets, multiple datasets at once
 }
 \keyword{internal}

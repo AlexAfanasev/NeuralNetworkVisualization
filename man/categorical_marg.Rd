@@ -2,13 +2,13 @@
 % Please edit documentation in R/neural_net_representative.R
 \name{categorical_marg}
 \alias{categorical_marg}
-\title{create plotting data for categorical variables}
+\title{Create plotting data for categorical variables}
 \usage{
 categorical_marg(neural_net, data, predictor, predictor_value, rep = 100,
   units = NULL, kind = "mean", change_variables = NULL,
   change_values = NULL, class = NULL, type)
 }
 \description{
-create plotting data for categorical variables
+Create plotting data for categorical variables
 }
 \keyword{internal}

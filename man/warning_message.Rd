@@ -2,12 +2,12 @@
 % Please edit documentation in R/neural_net_representative.R
 \name{warning_message}
 \alias{warning_message}
-\title{issue warnings}
+\title{Issue warnings}
 \usage{
 warning_message(kind, predictor_value, data, predictor, change_variables,
   change_values)
 }
 \description{
-issue warnings
+Issue warnings
 }
 \keyword{internal}

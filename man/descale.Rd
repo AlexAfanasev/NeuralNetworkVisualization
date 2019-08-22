@@ -2,11 +2,11 @@
 % Please edit documentation in R/plotting_data_preparation.R
 \name{descale}
 \alias{descale}
-\title{Returns the scale and the center of the predictor column.}
+\title{Descales selected predictor column.}
 \usage{
 descale(predictor, neural_net, grid)
 }
 \description{
-Returns the scale and the center of the predictor column.
+Descales selected predictor column.
 }
 \keyword{internal}

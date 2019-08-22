@@ -2,11 +2,11 @@
 % Please edit documentation in R/neural_net_representative.R
 \name{colModes}
 \alias{colModes}
-\title{columnwise modes}
+\title{Columnwise modes}
 \usage{
 colModes(x)
 }
 \description{
-columnwise modes
+Columnwise modes
 }
 \keyword{internal}
