@@ -121,13 +121,11 @@ get_predictors <- function (neural_net, predictors) {
 plot_multiple <- function (neural_net, predictors, probs, nrepetitions) {
     prediction_names <- ifelse(neural_net$type == "categorical",
                                yes = 2, no = 1)
-
-    plan(multiprocess)
+    #plan(multiprocess)
     prepared_data <- predictors %>%
         future_map(~ prepare_data(neural_net, .x, probs, nrepetitions)) %>%
         map(~ gather(.x, "predictor", "values", prediction_names)) %>%
         bind_rows()
-
     if (neural_net$type == "numerical") {
         return(plot_multiple_numerical(prepared_data, neural_net))
     } else if (neural_net$type == "categorical") {
