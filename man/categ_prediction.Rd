@@ -5,7 +5,7 @@
 \title{Create prediction data for categorical variables}
 \usage{
 categ_prediction(neural_net, new_data, class, predictor, predictor_value,
-  rep, units)
+  rep, units = NULL)
 }
 \description{
 Create prediction data for categorical variables

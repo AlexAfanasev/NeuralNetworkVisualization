@@ -5,9 +5,15 @@
 #' # Starts the shiny app
 #' run_shiny_app()
 #' }
-#' @importFrom  shiny shinyApp
+#' @import shiny
 #' @name run_shiny_app
 #' @export
 run_shiny_app <- function () {
-    return(shinyApp(ui = create_ui(), server = server))
+    app_directory <- system.file("example",
+                                 package = "NeuralNetworkVisualization")
+    if (app_directory == "") {
+        stop("Could not find example directory. Try re-installing
+             `NeuralNetworkVisualization`.", call. = FALSE)
+    }
+    return(runApp(app_directory, display.mode = "normal"))
 }
