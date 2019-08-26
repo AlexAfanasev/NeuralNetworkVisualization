@@ -40,7 +40,7 @@
 #'                           predictors = c("Sepal.Length", "Petal.Length"))
 #' plot_partial_dependencies(model, type = "ggplotly")
 #'
-#' @importFrom plotly ggplotly
+#' @importFrom plotly ggplotly layout
 #' @name plot_partial_dependencies
 #' @export
 plot_partial_dependencies <- function (neural_net, predictors = "all",
@@ -58,7 +58,7 @@ plot_partial_dependencies <- function (neural_net, predictors = "all",
     if (type == "ggplot") {
         return(figure)
     } else {
-        return(ggplotly(figure))
+        return(ggplotly(figure) %>% layout(margin = list(l = 75, b = 75)))
     }
 }
 

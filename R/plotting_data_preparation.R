@@ -107,6 +107,19 @@ descale <- function (predictor, neural_net, grid) {
     difference <- predictor_max - predictor_min
 
     grid <- mutate(grid, !!predictor := !!predictor*difference + predictor_min)
+
+    # descale prediction if model is numerical
+    if (neural_net$type == "numerical") {
+        identifier <- neural_net$dependent == (rownames(
+            neural_net$min_and_max_numeric_columns))
+
+        prediction_min <- neural_net$min_and_max_numeric_columns$min[identifier]
+        prediction_max <- neural_net$min_and_max_numeric_columns$max[identifier]
+        difference <- prediction_max - prediction_min
+
+        grid <- mutate(grid, prediction = prediction*difference +
+                           prediction_min)
+    }
     return(grid)
 }
 

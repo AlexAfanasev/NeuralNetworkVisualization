@@ -8,8 +8,7 @@ train <- data[index,]
 
 set.seed(1)
 model <- NeuralNetwork(medv ~ ., data = train, layers = c(5, 3),
-                       scale = TRUE, linear.output = TRUE, threshold = 0.5,
-                       lifesign = "minimal")
+                       scale = TRUE, linear.output = TRUE, threshold = 0.5)
 
 plot_partial_dependencies(model, probs = c(0.1, 0.9), nrepetitions = 5)
 plot_partial_dependencies(model, predictors = "crim", probs = c(0.05, 0.95),
@@ -28,7 +27,7 @@ set.seed(1)
 model <- NeuralNetwork(
     Species ~ Sepal.Length + Sepal.Width + Petal.Length + Petal.Width,
     data = train_model, layers = c(5, 5), rep = 5, linear.output = FALSE,
-    err.fct = "ce", lifesign = "minimal", stepmax = 1000000, threshold = 0.5)
+    err.fct = "ce", stepmax = 1000000, threshold = 0.5)
 
 plot_partial_dependencies(model, probs = c(0.1, 0.9), nrepetitions = 5)
 plot_partial_dependencies(model, predictors = "Sepal.Length")
@@ -54,7 +53,7 @@ set.seed(1)
 model <- NeuralNetwork(test ~ pregnant + glucose + diastolic + triceps +
                            insulin + bmi + diabetes + age, data = train,
                        layers = 2, err.fct = "ce", linear.output = FALSE,
-                       lifesign = "minimal", threshold = 0.5, stepmax = 1e6)
+                       threshold = 0.5, stepmax = 1e6)
 
 plot_partial_dependencies(model, probs = c(0.1, 0.9), nrepetitions = 5)
 plot_partial_dependencies(model, predictors = "glucose")
