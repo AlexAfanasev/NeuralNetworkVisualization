@@ -22,6 +22,7 @@
 #' @return Created figure
 #'
 #' @examples
+#' \dontrun{
 #' # Example: Numeric or Binary
 #' library(MASS)
 #' neural_network <- NeuralNetwork(f = "medv ~ .", data = Boston,
@@ -48,6 +49,7 @@
 #' plot_marginal_repres(model, predictor = c("Sepal.Length", "Petal.Length"),
 #' predictor_value = c(1,2,3,4,5,6), class = "Species")
 #' plot_marginal_repres(model,"Sepal.Width", c(2,3), class = "Species")
+#' }
 #'
 #' @importFrom plotly ggplotly
 #' @name plot_marginal_repres

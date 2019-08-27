@@ -17,6 +17,7 @@
 #' @return Created figure
 #'
 #' @examples
+#' \dontrun{
 #' # Example: Numeric or Binary
 #' library(MASS)
 #' neural_network <- NeuralNetwork(f = "medv ~ .", data = Boston,
@@ -39,6 +40,7 @@
 #' plot_partial_dependencies(model,
 #'                           predictors = c("Sepal.Length", "Petal.Length"))
 #' plot_partial_dependencies(model, type = "ggplotly")
+#' }
 #'
 #' @importFrom plotly ggplotly layout
 #' @name plot_partial_dependencies
