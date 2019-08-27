@@ -19,6 +19,8 @@
 #' @param rep Number of data points to be plotted for marginal effect
 #' @param class class for categorical variable
 #' @param kind Type of holding the other variables constant (mean, median)
+#' @param nrepititions Integer representing the number of repititions used for
+#'   creating the bootstrap confidence interval.
 #' @return Created figure
 #'
 #' @examples
