@@ -8,4 +8,4 @@ License: What license is it under?
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.1.1
-Imports: plotly, dplyr, purrr, tidyr, ggplot2, magrittr, stringr, nnet, neuralnet
+Imports: plotly, dplyr, purrr, tidyr, ggplot2, magrittr, stringr, nnet, neuralnet, furrr, future, rlang, shiny, waiter, shinyWidgets
