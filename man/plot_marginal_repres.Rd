@@ -36,6 +36,9 @@ interval. If booth are 0, intervals will not be plotted.}
 
 \item{plot_type}{Either 'ggplot' if the plot should be created using ggplot or
 'ggplotly' if plotly should be used.}
+
+\item{nrepititions}{Integer representing the number of repititions used for
+creating the bootstrap confidence interval.}
 }
 \value{
 Created figure
