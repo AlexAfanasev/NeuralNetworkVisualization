@@ -1,3 +1,4 @@
+# test commit for Travis CI --> this line has to be deleted afterwards
 library(NeuralNetworkVisualization)
 
 # Example for Plotting with numerical dependent variable
