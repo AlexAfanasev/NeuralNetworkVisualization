@@ -1,0 +1,9 @@
+language: r
+sudo: false
+cache: packages
+notifications:  
+  email:  
+    recipients:  
+    - Alex.Afanasev@hotmail.de  
+    on_success: always  
+    on_failure: always

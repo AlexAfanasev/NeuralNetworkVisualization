@@ -36,6 +36,9 @@ interval. If booth are 0, intervals will not be plotted.}
 
 \item{plot_type}{Either 'ggplot' if the plot should be created using ggplot or
 'ggplotly' if plotly should be used.}
+
+\item{nrepititions}{Integer representing the number of repititions used for
+creating the bootstrap confidence interval.}
 }
 \value{
 Created figure
@@ -45,6 +48,7 @@ Created figure
   the specified predictors.
 }
 \examples{
+\dontrun{
 # Example: Numeric or Binary
 library(MASS)
 neural_network <- NeuralNetwork(f = "medv ~ .", data = Boston,
@@ -71,5 +75,6 @@ predictor_value = c(5,6,5), class = "Species")
 plot_marginal_repres(model, predictor = c("Sepal.Length", "Petal.Length"),
 predictor_value = c(1,2,3,4,5,6), class = "Species")
 plot_marginal_repres(model,"Sepal.Width", c(2,3), class = "Species")
+}
 
 }
