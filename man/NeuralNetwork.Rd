@@ -8,7 +8,8 @@ NeuralNetwork(f, data, layers, scale = FALSE, ...)
 }
 \arguments{
 \item{f}{A formula representing the model that should be fitted. Handles
-categorical, binary and numerical data.}
+categorical, binary and numerical data. Specify each column separately or
+all with y ~ . .}
 
 \item{data}{The data that should be used for training the neural network.}
 

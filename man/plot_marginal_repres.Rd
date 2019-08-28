@@ -5,8 +5,8 @@
 \title{Function for plotting the marginal effect at representative values
  of the created NeuralNetwork}
 \usage{
-plot_marginal_repres(neural_net, predictor, predictor_value, rep = 100,
-  units = 1, kind = "mean", change_variables = NULL,
+plot_marginal_repres(neural_net, predictor, predictor_value = NULL,
+  rep = 100, units = 1, kind = "mean", change_variables = NULL,
   change_values = NULL, class = NULL, probs = c(0, 0),
   plot_type = "ggplot", nrepetitions = 5)
 }
@@ -37,8 +37,8 @@ interval. If both are 0, intervals will not be plotted.}
 \item{plot_type}{Either 'ggplot' if the plot should be created using ggplot or
 'ggplotly' if plotly should be used.}
 
-\item{nrepititions}{Integer representing the number of repititions used for
-creating the bootstrap confidence interval.}
+\item{nrepetitions}{Number of samples used within bootstrap for confidence
+intervals.}
 }
 \value{
 Created figure
@@ -76,5 +76,4 @@ plot_marginal_repres(model, predictor = c("Sepal.Length", "Petal.Length"),
 predictor_value = c(1,2,3,4,5,6), class = "Species")
 plot_marginal_repres(model,"Sepal.Width", c(2,3), class = "Species")
 }
-
 }

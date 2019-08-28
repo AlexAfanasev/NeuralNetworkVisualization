@@ -7,7 +7,6 @@ test_that("Plotting with numerical dependent variable works", {
     set.seed(1)
     model <- NeuralNetwork(medv ~ ., data = train, layers = c(5, 3),
                            scale = TRUE, linear.output = TRUE, threshold = 0.5)
-    
             expect_error(plot_marginal_repres(model, predictor = "crim", 
                                               predictor_value = 2, 
                                               kind = "quantile"))
@@ -27,6 +26,29 @@ test_that("Plotting with numerical dependent variable works", {
                                               predictor_value = 190,
                                               change_variables = "crim",
                                               change_value = 2))
+            expect_error(plot_marginal_repres(model, predictor = c("black", 
+                                                                   "tax"), 
+                                              predictor_value = c(190, 200),
+                                              change_variables = "crim",
+                                              change_value = 2), NA)
+            expect_error(plot_marginal_repres(model, predictor = "black", 
+                                              predictor_value = 190,
+                                              change_variables = "crim",
+                                              change_value = 2 , rep = 200,
+                                              units = 2), NA)
+            expect_error(plot_marginal_repres(model, predictor = "black", 
+                                              predictor_value = 190,
+                                              change_variables = NULL,
+                                              change_value = NULL , rep = 200,
+                                              units = 2, probs = c(0.2,0.8)),
+                         NA)
+            expect_error(plot_marginal_repres(model, predictor = c("black",
+                                                                   "crim"), 
+                                              predictor_value = NULL,
+                                              change_variables = NULL,
+                                              change_value = NULL, rep = 200,
+                                              units = 2, probs = c(0.2,0.8)),
+                         NA)
 })
 
 test_that("Plotting with categorical dependent variable works", {
@@ -66,7 +88,34 @@ test_that("Plotting with categorical dependent variable works", {
                                           kind = "quantile",
                                           change_variables = "Sepal.Length",
                                           change_value = c(5,6,6),
-                                          class = "Species"))   
+                                          class = "Species")) 
+        expect_error(plot_marginal_repres(model, predictor = "Sepal.Length", 
+                                          predictor_value = c(1,2,3),
+                                          kind = "median",
+                                          change_variables = c("Sepal.Width",
+                                                               "Petal.Length"),
+                                          change_value = c(5,6,6,5,6,7),
+                                          class = "Species"), NA) 
+        expect_error(plot_marginal_repres(model, predictor = "Petal.Length", 
+                                          predictor_value = c(1,2,3),
+                                          kind = "mean",
+                                          change_variables = "Sepal.Length",
+                                          change_value = c(5,6,6),
+                                          class = "Species", rep = 150), NA) 
+        expect_error(plot_marginal_repres(model, predictor = c("Sepal.Length", 
+                                                               "Sepal.Width"),
+                                          predictor_value = c(1,2,3, 4,5,6),
+                                          kind = "median",
+                                          change_variables = "Petal.Length",
+                                          change_value = c(5,6,6),
+                                          class = "Species"), NA) 
+        expect_error(plot_marginal_repres(model, predictor = c("Sepal.Length", 
+                                                               "Sepal.Width"),
+                                          predictor_value = NULL,
+                                          kind = "median",
+                                          change_variables = "Petal.Length",
+                                          change_value = c(5,6,6),
+                                          class = "Species"), NA) 
         })
 
 
