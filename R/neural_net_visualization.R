@@ -50,13 +50,13 @@ plot_partial_dependencies <- function (neural_net, predictors = "all",
                                        nrepetitions = 50) {
     if (!all(probs == 0)) is_valid_probs(probs); is_valid_type(type)
     predictors <- get_predictors(neural_net, predictors)
-    
+
     if (length(predictors) > 1) {
         figure <- plot_multiple(neural_net, predictors, probs, nrepetitions)
     } else {
         figure <- plot_single(neural_net, predictors[[1]], probs, nrepetitions)
     }
-    
+
     if (type == "ggplot") {
         return(figure)
     } else {
@@ -147,7 +147,7 @@ plot_multiple_numerical <- function (prepared_data, neural_net) {
                facet_wrap(vars((predictor)), scales = "free") +
                labs(title = paste("Partial dependence plots with response",
                                   neural_net$dependent),
-                    y = "Marginal probability of predictor",
+                    y = "Partial Dependence",
                     x = "Predictor") +
                theme_minimal())
 }
@@ -165,7 +165,7 @@ plot_multiple_categorical <- function (prepared_data, neural_net) {
                facet_wrap(vars(predictor), scales = "free") +
                labs(title = paste("Partial dependence plots with response",
                                   neural_net$dependent),
-                    y = "Marginal probability of predictor",
+                    y = "Partial Dependence",
                     x = "Predictor") +
                theme_minimal())
 }
@@ -194,7 +194,7 @@ plot_single_numerical <- function (prepared_data, predictor, neural_net) {
                geom_line(size = 1) + geom_point() + geom_ribbon(alpha = 0.25) +
                labs(title = paste("Partial dependence plot with response",
                                   neural_net$dependent),
-                    y = paste("Marginal probability of", predictor),
+                    y = paste("Partial Dependence", predictor),
                     x = paste(predictor)) + theme_minimal())
 }
 
@@ -212,7 +212,7 @@ plot_single_categorical <- function (prepared_data, predictor, neural_net) {
                    alpha = 0.25) +
                labs(title = paste("Partial dependence plot for",
                                   neural_net$dependent),
-                    y = paste("Marginal probability of", predictor),
+                    y = paste("Partial Dependence", predictor),
                     x = paste(predictor)) +
                theme_minimal())
 }

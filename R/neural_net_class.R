@@ -60,7 +60,7 @@ NeuralNetwork <- function (f, data, layers, scale = FALSE, ...) {
              scale = scale, additional = list(...)), class = "NeuralNetwork"))
 }
 
-#' Returrns the independent variables based on forumla.
+#' Returrns the independent variables based on specification.
 #'
 #' @keywords internal
 get_independent <- function (data, dependent_variable, specification) {
@@ -112,8 +112,8 @@ fit_neural_network <- function (f, data, layers, type, dependent, independent,
     if (type == "numerical") {
         return(fit_neural_network_numeric(f, data, layers, ...))
     } else if (type == "categorical") {
-        fit_neural_network_categorical(f, data, layers, dependent, independent,
-                                       ...)
+        return(fit_neural_network_categorical(f, data, layers, dependent, independent,
+                                              ...))
     }
 }
 
@@ -143,6 +143,3 @@ fit_neural_network_categorical <- function (f, data, layers, dependent,
                           "~", paste(independent, collapse = "+"), sep = " "))
     return(neuralnet(f, data = data, hidden = layers, ...))
 }
-
-# TODO: add functions for adding dummy variables for the factor independent variables
-# call these functions in fit_neural_network!

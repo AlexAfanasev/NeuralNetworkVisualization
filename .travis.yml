@@ -4,6 +4,11 @@ cache: packages
 notifications:  
   email:  
     recipients:  
-    - Alex.Afanasev@hotmail.de  
+    - Alex.Afanasev@hotmail.de
+    - Jacqueline-seufert@web.de  
     on_success: always  
     on_failure: always
+r_packages:
+  - covr
+after_success:
+  - Rscript -e 'library(covr); codecov()'
