@@ -25,7 +25,7 @@ train_model <- iris[index,]
 
 set.seed(1)
 model <- NeuralNetwork(
-    Species ~ Sepal.Length + Sepal.Width + Petal.Length + Petal.Width,
+    Species ~ .,
     data = train_model, layers = c(5, 5), rep = 5, linear.output = FALSE,
     err.fct = "ce", stepmax = 1000000, threshold = 0.5)
 

@@ -32,7 +32,7 @@ plot the partial dependencies.}
 \item{class}{class for categorical variable}
 
 \item{probs}{Vector of lower and upper bound probabilities for the confidence
-interval. If booth are 0, intervals will not be plotted.}
+interval. If both are 0, intervals will not be plotted.}
 
 \item{plot_type}{Either 'ggplot' if the plot should be created using ggplot or
 'ggplotly' if plotly should be used.}

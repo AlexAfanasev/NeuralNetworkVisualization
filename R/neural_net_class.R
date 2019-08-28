@@ -8,7 +8,8 @@
 #' @param ... further parameters for neuralnet, see:
 #'   \code{\link[neuralnet]{neuralnet}}
 #' @param f A formula representing the model that should be fitted. Handles
-#'   categorical, binary and numerical data.
+#'   categorical, binary and numerical data. Specify each column separately or
+#'   all with y ~ . .
 #' @param data The data that should be used for training the neural network.
 #' @param layers Vector representing the number of layers that should be used.
 #' @param scale Boolean representing if the data should be scaled or not
@@ -39,7 +40,8 @@
 #' @export
 NeuralNetwork <- function (f, data, layers, scale = FALSE, ...) {
     f <- as.formula(f); row.names(data) <- NULL
-    dependent <- all.vars(f[[2]]); independent <- all.vars(f[[3]])
+    dependent <- all.vars(f[[2]])
+    independent <- get_independent(data, dependent, all.vars(f[[3]]))
     type <- get_type(data[[dependent]])
 
     numeric_columns <- sapply(data, is.numeric)
@@ -56,6 +58,19 @@ NeuralNetwork <- function (f, data, layers, scale = FALSE, ...) {
              min_and_max_numeric_columns = min_and_max_numeric_columns,
              type = type, dependent = dependent, f = f, layers = layers,
              scale = scale, additional = list(...)), class = "NeuralNetwork"))
+}
+
+#' Returrns the independent variables based on forumla.
+#'
+#' @keywords internal
+get_independent <- function (data, dependent_variable, specification) {
+    independent_variables <- colnames(data)[colnames(data) !=
+                                                dependent_variable]
+    if (specification == ".") {
+        return(independent_variables)
+    } else {
+        return(specification)
+    }
 }
 
 #' Returrns the type for the dependent variable (numerical or categorical).

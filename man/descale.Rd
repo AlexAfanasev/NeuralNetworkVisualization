@@ -4,7 +4,7 @@
 \alias{descale}
 \title{Descales selected predictor column.}
 \usage{
-descale(predictor, neural_net, grid)
+descale(predictor, neural_net, grid, prediction_scale = F)
 }
 \description{
 Descales selected predictor column.
