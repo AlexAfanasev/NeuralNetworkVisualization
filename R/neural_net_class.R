@@ -42,6 +42,10 @@ NeuralNetwork <- function (f, data, layers, scale = FALSE, ...) {
     f <- as.formula(f); row.names(data) <- NULL
     dependent <- all.vars(f[[2]])
     independent <- get_independent(data, dependent, all.vars(f[[3]]))
+    factor_specification <- create_factor_specification(
+        data, dependent, independent, f)
+    data <- factor_specification$data; f <- factor_specification$f
+    independent <- factor_specification$independent
     type <- get_type(data[[dependent]])
 
     numeric_columns <- sapply(data, is.numeric)
@@ -60,13 +64,46 @@ NeuralNetwork <- function (f, data, layers, scale = FALSE, ...) {
              scale = scale, additional = list(...)), class = "NeuralNetwork"))
 }
 
+
+#' Returrns the data with added factor columns and changed formula
+#'
+#' @keywords internal
+create_factor_specification <- function(data, dependent, independent, f){
+    factor_columns <- sort(which(sapply(data, is.factor) &
+                                     (colnames(data) %in% independent)),
+                           decreasing = TRUE)
+
+
+
+    if (any(factor_columns)) {
+        new_columns <- c()
+        for (factor_column in factor_columns) {
+            column <- data[, factor_column]
+            levels(column) <- paste(colnames(data)[factor_column],
+                                    levels(column), sep = "")
+
+            identifier <- class.ind(column)
+            new_columns <- c(new_columns, colnames(identifier))
+            rownames(identifier) <- rownames(data)
+            data <- cbind(data, identifier); data <- data[, -factor_column]
+        }
+
+        independent <- c(colnames(data)[which(colnames(data) %in% independent)],
+                         new_columns)
+        f <- paste(dependent, " ~ ", paste(independent, collapse = " + "),
+                   sep = "")
+
+    }
+    return(list(data = data, f = f, independent = independent))
+}
+
 #' Returrns the independent variables based on specification.
 #'
 #' @keywords internal
 get_independent <- function (data, dependent_variable, specification) {
     independent_variables <- colnames(data)[colnames(data) !=
                                                 dependent_variable]
-    if (specification == ".") {
+    if (any(specification == ".")) {
         return(independent_variables)
     } else {
         return(specification)
@@ -112,8 +149,8 @@ fit_neural_network <- function (f, data, layers, type, dependent, independent,
     if (type == "numerical") {
         return(fit_neural_network_numeric(f, data, layers, ...))
     } else if (type == "categorical") {
-        return(fit_neural_network_categorical(f, data, layers, dependent, independent,
-                                              ...))
+        return(fit_neural_network_categorical(f, data, layers, dependent,
+                                              independent, ...))
     }
 }
 
@@ -132,10 +169,9 @@ fit_neural_network_numeric <- function (f, data, layers, ...) {
 #' @keywords internal
 fit_neural_network_categorical <- function (f, data, layers, dependent,
                                             independent, ...) {
-    identifier <- class.ind(data[[dependent]])
-    rownames(identifier) <- rownames(data)
-
     if (!(all(levels(data[[dependent]]) %in% colnames(data)))) {
+        identifier <- class.ind(data[[dependent]])
+        rownames(identifier) <- rownames(data)
         data <- cbind(data, identifier)
     }
 

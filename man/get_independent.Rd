@@ -2,11 +2,11 @@
 % Please edit documentation in R/neural_net_class.R
 \name{get_independent}
 \alias{get_independent}
-\title{Returrns the independent variables based on forumla.}
+\title{Returrns the independent variables based on specification.}
 \usage{
 get_independent(data, dependent_variable, specification)
 }
 \description{
-Returrns the independent variables based on forumla.
+Returrns the independent variables based on specification.
 }
 \keyword{internal}

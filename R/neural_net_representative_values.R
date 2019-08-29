@@ -113,7 +113,7 @@ create_data <- function(neural_net) {
 }
 
 #' change input data via change_variables and change_values
-#' @importFrom dplyr group_by
+#' @importFrom dplyr group_by count
 #' @importFrom magrittr %>%
 #' @importFrom purrr map_dfr
 #' @keywords internal

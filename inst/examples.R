@@ -2,7 +2,7 @@ library(NeuralNetworkVisualization)
 
 # Example for Plotting with numerical dependent variable
 library(MASS)
-data <- Boston
+data <- Boston; data$chas <- as.factor(data$chas)
 index <- sample(1:nrow(data), round(0.75*nrow(data)))
 train <- data[index,]
 
