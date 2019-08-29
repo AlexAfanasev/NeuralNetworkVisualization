@@ -92,20 +92,20 @@ rescale_total <- function(min, diff, predictor, data) {
 }
 
 #' rescale all selected variables
-#' @importFrom purrr pmap_dfc
+#' @importFrom purrr pmap_dfc map2
 #' @keywords internal
-#'
 create_data <- function(neural_net) {
     if (isTRUE(neural_net$scale)) {
-    input_data <- neural_net$neural_network$data
-    index <- which(names(input_data) %in%
-                       rownames(neural_net$min_and_max_numeric_columns))
-    identifier <- names(input_data)[index]
-    min <- neural_net$min_and_max_numeric_columns[identifier, "min"]
-    max <- neural_net$min_and_max_numeric_columns[identifier, "max"]
-    diff <- max - min
-    data <- pmap_dfc(list(min, diff, identifier), ~ rescale_total(..1,..2,..3,
-                                                               input_data))
+        input_data <- neural_net$neural_network$data
+        index <- which(names(input_data) %in%
+                           rownames(neural_net$min_and_max_numeric_columns))
+        identifier <- names(input_data)[index]
+        min <- neural_net$min_and_max_numeric_columns[identifier, "min"]
+        max <- neural_net$min_and_max_numeric_columns[identifier, "max"]
+        diff <- max - min
+        data <- pmap_dfc(list(min, diff, identifier), ~ rescale_total(..1,..2,
+                                                                      ..3,
+                                                                   input_data))
     } else {
     data <- neural_net$neural_network$data
     }
@@ -115,9 +115,8 @@ create_data <- function(neural_net) {
 #' change input data via change_variables and change_values
 #' @importFrom dplyr group_by count
 #' @importFrom magrittr %>%
-#' @importFrom purrr map_dfr
+#' @importFrom purrr map_dfr pmap map2
 #' @keywords internal
-#'
 change <- function(data, change_variables, change_values, class,
                    new_data, rep, type) {
     if (type == "numerical") {
@@ -132,7 +131,7 @@ change <- function(data, change_variables, change_values, class,
                                                rep(count, len)), ncol = len))
         names(change_values) <- change_variables
         min <- as.numeric(min_max(data)[change_variables, 1])
-        diff <- as.numeric(min_max(data)[change_variables, 2])-
+        diff <- as.numeric(min_max(data)[change_variables, 2]) -
                 as.numeric(min_max(data)[change_variables, 1])
         new_data[change_variables] <- change_values[change_variables]
         new_data[change_variables] <- pmap(list(change_variables, min, diff),~
@@ -198,7 +197,7 @@ grid_categorical <- function(class, neural_input, cols_numeric, kind) {
     input_matrix <- matrix(rep(NA, length(neural_input) * uni), nrow = uni)
     mean_input <- data.frame((input_matrix))
     names(mean_input) <- names(neural_input)
-    process_input <- neural_input[c(class,index)] %>% group_by(!! class_var)
+    process_input <- neural_input[c(class,index)] %>% group_by(!!class_var)
     if (kind == "mean") {
         mean_input[c(class, index)] <- process_input %>%
             group_modify(~ data.frame(t(colMeans(.x))))
@@ -235,7 +234,9 @@ sequence <- function(x, rep, units) {
 #'
 grid_factor <- function(neural_net, mean_input, class, type, rep) {
     neural_input <- neural_net$neural_network$data
-    cols_dummy <- sapply(neural_input, function(x) length(unique(x)) == 2)
+    cols_dummy <- sapply(neural_input,
+                         function(x) length(unique(x)) == 2 & is.numeric(x))
+
     if (type == "numerical") {
         col_means <- t(colModes(neural_input[cols_dummy]))
         mean_input[cols_dummy] <- data.frame(col_means)
@@ -244,7 +245,7 @@ grid_factor <- function(neural_net, mean_input, class, type, rep) {
     if (type == "categorical") {
         class_var <- sym(class)
         index <- names(neural_input[cols_dummy])
-        neural_input <- neural_input %>% group_by(!! class_var)
+        neural_input <- neural_input %>% group_by(!!class_var)
         mean_input[c(class,index)] <- neural_input[c(class,index)] %>%
         group_modify(~ data.frame(t(colModes(.x))))
         new_data <- map_dfr(seq_len(rep), ~ mean_input)
@@ -305,6 +306,7 @@ warning_message <- function(neural_net, kind, predictor_value, predictor,
 
 #' scale change_variables
 #' @importFrom purrr map2
+#' @importFrom plyr compact
 #' @keywords internal
 #'
 scale_change <- function(data, change_variables, change_values) {
@@ -316,6 +318,7 @@ scale_change <- function(data, change_variables, change_values) {
 }
 
 #' create plotting data for numeric
+#' @importFrom dplyr mutate
 #' @keywords internal
 #'
 
@@ -345,7 +348,7 @@ numeric_marg <- function(neural_net, data, predictor,
     new_data$yhat <- neuralnet::compute(neural_net$neural_network,
                                       new_data)$net.result
     identifier <- neural_net$dependent == (rownames(
-        neural_net$min_and_max_numeric_columns))
+                                        neural_net$min_and_max_numeric_columns))
     prediction_min <- neural_net$min_and_max_numeric_columns$min[identifier]
     prediction_max <- neural_net$min_and_max_numeric_columns$max[identifier]
     difference <- prediction_max - prediction_min
@@ -505,7 +508,7 @@ plotting_input <- function(neural_net, predictor,
 }
 
 #' create plotting for multiple predictors
-#' @importFrom purrr pmap map
+#' @importFrom purrr pmap map map2
 #' @importFrom dplyr bind_rows
 #' @importFrom magrittr %>%
 #' @importFrom tidyr gather
@@ -547,7 +550,7 @@ plot_single_res <- function(neural_net, predictor,
                         change_values, class, probs, nrepetitions) {
     type <- neural_net$type
     len <- length(neural_net$neural_network$model.list$response)
-    warn_plot(type = type, predictor, predictor_value, len =len)
+    warn_plot(type = type, predictor, predictor_value, len = len)
     prepared_data <- plotting_input(neural_net, predictor,
                                     predictor_value, rep, units,
                                     kind, change_variables,
@@ -594,8 +597,8 @@ empty_predictor_value <- function(neural_net, predictor, class) {
     }
     if (type == "categorical") {
         data_aux = data %>%
-            group_by(!! sym(class)) %>%
-            summarize_at(vars(predictor),funs(mean))
+            group_by(!!sym(class)) %>%
+            summarize_at(vars(predictor), list(mean))
         predictor_value <- as.numeric(unlist(data_aux[predictor]))
     }
     return(predictor_value)

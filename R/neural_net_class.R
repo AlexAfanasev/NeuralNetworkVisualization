@@ -100,7 +100,7 @@ create_factor_specification <- function(data, dependent, independent, f){
 #' Returrns the independent variables based on specification.
 #'
 #' @keywords internal
-get_independent <- function (data, dependent_variable, specification) {
+get_independent <- function(data, dependent_variable, specification){
     independent_variables <- colnames(data)[colnames(data) !=
                                                 dependent_variable]
     if (any(specification == ".")) {

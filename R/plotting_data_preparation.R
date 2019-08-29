@@ -98,7 +98,7 @@ compute_mean_prediction_numeric <- function (grid, neural_net, predictor) {
 #' Descales selected predictor column.
 #'
 #' @keywords internal
-descale <- function (predictor, neural_net, grid, prediction_scale = F) {
+descale <- function (predictor, neural_net, grid) {
     identifier <- as.character(predictor) == (rownames(
         neural_net$min_and_max_numeric_columns))
 
@@ -110,7 +110,7 @@ descale <- function (predictor, neural_net, grid, prediction_scale = F) {
                        !!sym(predictor) * difference + predictor_min)
    
     # descale prediction if model is numerical
-    if (neural_net$type == "numerical" & isTRUE(prediction_scale)) {
+    if (neural_net$type == "numerical") {
         identifier <- neural_net$dependent == (rownames(
             neural_net$min_and_max_numeric_columns))
 
