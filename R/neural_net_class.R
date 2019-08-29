@@ -63,10 +63,10 @@ NeuralNetwork <- function (f, data, layers, scale = FALSE, ...) {
 #' Returrns the independent variables based on specification.
 #'
 #' @keywords internal
-get_independent <- function (data, dependent_variable, specification) {
+get_independent <- function(data, dependent_variable, specification){
     independent_variables <- colnames(data)[colnames(data) !=
                                                 dependent_variable]
-    if (specification == ".") {
+    if (any(specification == ".")) {
         return(independent_variables)
     } else {
         return(specification)
