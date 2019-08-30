@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.com/AlexAfanasev/NeuralNetworkVisualization.svg?branch=master)](https://travis-ci.com/AlexAfanasev/NeuralNetworkVisualization)
+
 # NeuralNetworkVisualization
 Visualize the marginal effects of Neural Networks (Shiny, Plotly etc.)
 # Links
