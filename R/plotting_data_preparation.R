@@ -14,8 +14,8 @@
 #'
 #' @name prepare_data
 #' @keywords internal
-prepare_data <- function (neural_net, predictor, probs = c(0.05, 0.95),
-                          nrepetitions = 20) {
+prepare_data <- function(neural_net, predictor, probs = c(0.05, 0.95),
+                         nrepetitions = 20){
     grid <- create_grid(neural_net, predictor)
     plotting_data <- create_plotting_data(grid, predictor, neural_net, probs,
                                           nrepetitions)
@@ -27,7 +27,7 @@ prepare_data <- function (neural_net, predictor, probs = c(0.05, 0.95),
 #' @importFrom dplyr select
 #' @importFrom tidyr crossing
 #' @keywords internal
-create_grid <- function (neural_net, predictor) {
+create_grid <- function(neural_net, predictor){
     grid_predictor <- select(neural_net$neural_network$data, !!predictor)
     grid_input <- select(neural_net$neural_network$data, -!!predictor)
     grid <- crossing(grid_predictor, grid_input)
@@ -37,8 +37,8 @@ create_grid <- function (neural_net, predictor) {
 #' Creates the plotting data.
 #'
 #' @keywords internal
-create_plotting_data <- function (grid, predictor, neural_net, probs,
-                                  nrepetitions) {
+create_plotting_data <- function(grid, predictor, neural_net, probs,
+                                 nrepetitions){
     if (neural_net$type == "numerical") {
         plotting_data <- prepare_data_numeric(grid, predictor, neural_net,
                                               probs, nrepetitions)
@@ -55,8 +55,8 @@ create_plotting_data <- function (grid, predictor, neural_net, probs,
 #' @importFrom dplyr mutate summarize_at group_by ungroup
 #' @importFrom neuralnet compute
 #' @keywords internal
-prepare_data_numeric <- function (grid, predictor, neural_net, probs,
-                                  nrepetitions) {
+prepare_data_numeric <- function(grid, predictor, neural_net, probs,
+                                 nrepetitions){
     partial_dependence <- compute_mean_prediction_numeric(
         grid, neural_net, predictor)
 
@@ -79,12 +79,12 @@ prepare_data_numeric <- function (grid, predictor, neural_net, probs,
 #' @importFrom neuralnet compute
 #' @importFrom rlang sym
 #' @keywords internal
-compute_mean_prediction_numeric <- function (grid, neural_net, predictor) {
+compute_mean_prediction_numeric <- function(grid, neural_net, predictor){
     grid <- grid %>% mutate(prediction = compute(
              neural_net$neural_network, grid)$net.result)
 
     if (isTRUE(neural_net$scale)) {
-        grid <- descale(predictor, neural_net, grid)
+        grid <- descale_grid(predictor, neural_net, grid)
     }
 
     partial_dependence <- grid %>%
@@ -95,10 +95,10 @@ compute_mean_prediction_numeric <- function (grid, neural_net, predictor) {
     return(partial_dependence)
 }
 
-#' Descales selected predictor column.
+#' Descales selected predictor column and prediction value for grid.
 #'
 #' @keywords internal
-descale <- function (predictor, neural_net, grid) {
+descale_grid <- function(predictor, neural_net, grid){
     identifier <- as.character(predictor) == (rownames(
         neural_net$min_and_max_numeric_columns))
 
@@ -106,10 +106,9 @@ descale <- function (predictor, neural_net, grid) {
     predictor_max <- neural_net$min_and_max_numeric_columns$max[identifier]
     difference <- predictor_max - predictor_min
 
-    grid <- mutate(grid, !! sym(predictor) := 
+    grid <- mutate(grid, !! sym(predictor) :=
                        !!sym(predictor) * difference + predictor_min)
-   
-    # descale prediction if model is numerical
+
     if (neural_net$type == "numerical") {
         identifier <- neural_net$dependent == (rownames(
             neural_net$min_and_max_numeric_columns))
@@ -127,8 +126,8 @@ descale <- function (predictor, neural_net, grid) {
 #' Prepares the data with categorical dependent variable.
 #'
 #' @keywords internal
-prepare_data_categoric <- function (grid, predictor, neural_net, probs,
-                                    nrepetitions) {
+prepare_data_categoric <- function(grid, predictor, neural_net, probs,
+                                   nrepetitions){
     partial_dependence <- compute_mean_prediction_categoric(
         grid, neural_net, predictor)
 
@@ -155,7 +154,7 @@ prepare_data_categoric <- function (grid, predictor, neural_net, probs,
 #' @importFrom neuralnet compute
 #' @importFrom rlang sym
 #' @keywords internal
-compute_mean_prediction_categoric <- function (grid, neural_net, predictor) {
+compute_mean_prediction_categoric <- function(grid, neural_net, predictor){
     prediction <- as.data.frame(
         compute(neural_net$neural_network, grid)$net.result)
     names(prediction) <- paste(neural_net$neural_network$model.list$response,
@@ -165,8 +164,8 @@ compute_mean_prediction_categoric <- function (grid, neural_net, predictor) {
         gather(class, prediction, ends_with("prediction")) %>%
         mutate(class = str_replace(class, "_prediction", ""))
 
-    if(isTRUE(neural_net$scale)){
-        grid <- descale(predictor, neural_net, grid)
+    if (isTRUE(neural_net$scale)) {
+        grid <- descale_grid(predictor, neural_net, grid)
     }
 
     partial_dependence <- grid  %>%
@@ -187,8 +186,8 @@ compute_mean_prediction_categoric <- function (grid, neural_net, predictor) {
 #' @importFrom stringr str_replace
 #' @importFrom rlang sym
 #' @keywords internal
-compute_bootstrap_ci <- function (partial_dependence, grid, predictor,
-                                  neural_net, probs, nrepetitions) {
+compute_bootstrap_ci <- function(partial_dependence, grid, predictor,
+                                 neural_net, probs, nrepetitions){
     number_of_data_points <- nrow(neural_net$neural_network$data)
     bootstrap_data <- matrix(nrow = nrow(partial_dependence),
                              ncol = nrepetitions)
@@ -196,7 +195,8 @@ compute_bootstrap_ci <- function (partial_dependence, grid, predictor,
     for (current_rep in 1:nrepetitions) {
         indices <- sample(1:number_of_data_points, size = number_of_data_points,
                           replace = TRUE)
-        resampled_data_set <- neural_net$neural_network$data[indices, ]
+        descaled_data <- descale_data(neural_net)
+        resampled_data_set <- descaled_data[indices, ]
         args <- c(list(f = neural_net$f, data = resampled_data_set,
                        layers = neural_net$layers, scale = neural_net$scale),
                   neural_net$additional)
@@ -217,4 +217,29 @@ compute_bootstrap_ci <- function (partial_dependence, grid, predictor,
     partial_dependence[, c("lwr", "upr")] <- t(apply(bootstrap_data, 1,
                                                      quantile, probs = probs))
     return(partial_dependence)
+}
+
+#' Descales data for neural_net
+#'
+#' @importFrom dplyr mutate
+#' @importFrom rlang sym
+#' @keywords internal
+descale_data <- function(neural_net){
+    data <- neural_net$neural_network$data
+    if (isTRUE(neural_net$scale)) {
+        for (column_name in rownames(neural_net$min_and_max_numeric_columns)) {
+            identifier <- column_name == (rownames(
+                neural_net$min_and_max_numeric_columns))
+
+            predictor_min <- neural_net$min_and_max_numeric_columns$min[
+                identifier]
+            predictor_max <- neural_net$min_and_max_numeric_columns$max[
+                identifier]
+            difference <- predictor_max - predictor_min
+
+            data <- mutate(data, !!sym(column_name) := !!sym(column_name) *
+                               difference + predictor_min)
+        }
+    }
+    return(data)
 }

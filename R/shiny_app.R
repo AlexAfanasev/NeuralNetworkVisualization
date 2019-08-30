@@ -8,7 +8,7 @@
 #' @import shiny
 #' @name run_shiny_app
 #' @export
-run_shiny_app <- function () {
+run_shiny_app <- function(){
     app_directory <- system.file("example",
                                  package = "NeuralNetworkVisualization")
     if (app_directory == "") {

@@ -38,7 +38,7 @@
 #'
 #' @name NeuralNetwork
 #' @export
-NeuralNetwork <- function (f, data, layers, scale = FALSE, ...) {
+NeuralNetwork <- function(f, data, layers, scale = FALSE, ...){
     f <- as.formula(f); row.names(data) <- NULL
     dependent <- all.vars(f[[2]])
     independent <- get_independent(data, dependent, all.vars(f[[3]]))
@@ -113,7 +113,7 @@ get_independent <- function(data, dependent_variable, specification){
 #' Returrns the type for the dependent variable (numerical or categorical).
 #'
 #' @keywords internal
-get_type <- function (data) {
+get_type <- function(data){
     if (is.factor(data)) {
         return("categorical")
     } else if (is.numeric(data)) {
@@ -135,7 +135,7 @@ scale_column <- function(col){
 #' Returns the min and max of a data.frame.
 #'
 #' @keywords internal
-min_max <- function (data) {
+min_max <- function(data){
     mins <- apply(data, 2, min)
     maxs <- apply(data, 2, max)
     return(data.frame(min = mins, max = maxs))
@@ -144,8 +144,8 @@ min_max <- function (data) {
 #' Fits neural network for either numerical or categorical dependent variable.
 #'
 #' @keywords internal
-fit_neural_network <- function (f, data, layers, type, dependent, independent,
-                                ...) {
+fit_neural_network <- function(f, data, layers, type, dependent, independent,
+                               ...){
     if (type == "numerical") {
         return(fit_neural_network_numeric(f, data, layers, ...))
     } else if (type == "categorical") {
@@ -158,7 +158,7 @@ fit_neural_network <- function (f, data, layers, type, dependent, independent,
 #'
 #' @importFrom  neuralnet neuralnet
 #' @keywords internal
-fit_neural_network_numeric <- function (f, data, layers, ...) {
+fit_neural_network_numeric <- function(f, data, layers, ...){
     return(neuralnet(f, data = data, hidden = layers, ...))
 }
 
@@ -167,8 +167,8 @@ fit_neural_network_numeric <- function (f, data, layers, ...) {
 #' @importFrom  neuralnet neuralnet
 #' @importFrom  nnet class.ind
 #' @keywords internal
-fit_neural_network_categorical <- function (f, data, layers, dependent,
-                                            independent, ...) {
+fit_neural_network_categorical <- function(f, data, layers, dependent,
+                                           independent, ...){
     if (!(all(levels(data[[dependent]]) %in% colnames(data)))) {
         identifier <- class.ind(data[[dependent]])
         rownames(identifier) <- rownames(data)
