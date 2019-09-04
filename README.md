@@ -134,7 +134,7 @@ plot_partial_dependencies(model, predictors = c("pregnant", "diastolic"),
 library(NeuralNetworkVisualization)
 run_shiny_app()
 ```
-![Shiny App](inst/img/siny_app.png "fig:")
+![Shiny App](inst/img/shiny_app.png "fig:")
 
 ## Sources
 * https://towardsdatascience.com/first-neural-network-for-beginners-explained-with-code-4cfd37e06eaf
