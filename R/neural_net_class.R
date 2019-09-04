@@ -55,6 +55,12 @@ NeuralNetwork <- function(f, data, layers, scale = FALSE, ...){
         data[, numeric_columns] <- sapply(data[, numeric_columns], scale_column)
     }
 
+    if (type == "categorical") {
+        f <- as.formula(paste(
+            dependent, "~", paste(independent, collapse = "+"), sep = " "))
+    }
+
+
     neural_network <- fit_neural_network(f, data, layers, type, dependent,
                                          independent, ...)
     return(structure(
@@ -175,7 +181,8 @@ fit_neural_network_categorical <- function(f, data, layers, dependent,
         data <- cbind(data, identifier)
     }
 
-    f <- as.formula(paste(paste(levels(data[[dependent]]), collapse = "+"),
-                          "~", paste(independent, collapse = "+"), sep = " "))
+    f <- as.formula(paste(paste(
+        levels(data[[dependent]]), collapse = " + "), "~",
+        paste(independent, collapse = "+"), sep = " "))
     return(neuralnet(f, data = data, hidden = layers, ...))
 }
