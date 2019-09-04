@@ -48,7 +48,7 @@ tagList(
         div(
     fluidPage(
         br(),
-        titlePanel("Marginal Effects for Neural Networks"),
+        titlePanel("Partial Dependencies for Neural Networks"),
         br(),
         tabsetPanel(
             id = "inTabset",

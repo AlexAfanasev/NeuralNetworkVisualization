@@ -1,6 +1,6 @@
 ### Quick Overview
 
-This tool allows you to interactively visualize the marginal effects of neural networks.
+This tool allows you to interactively visualize the partial dependencies of neural networks.
 
 Select the **<i class="fa fa-cog"></i> Settings** tab to upload a NeuralNetwork **.rds** file. 
 Afterwards you can change the settings for the plot you want to create.
