@@ -1,12 +1,10 @@
 test_that("Data is correctly prepared for plotting with numerical
           dependent variable", {
     library(MASS)
-    data <- Boston
-    index <- sample(1:nrow(data), round(0.75*nrow(data)))
-    train <- data[index,]
+    data <- Boston; data$chas <- as.factor(data$chas)
 
     set.seed(1)
-    model <- NeuralNetwork(medv ~ ., data = train, layers = c(5, 3),
+    model <- NeuralNetwork(medv ~ ., data = data, layers = c(5, 3),
                            scale = TRUE, linear.output = TRUE, threshold = 0.5)
 
     for (predictor in syms(model$neural_network$model.list$variables)) {
@@ -23,14 +21,13 @@ test_that("Data is correctly prepared for plotting with categorical
           dependent variable", {
     library(datasets)
     data("iris")
-    index <- sample(x = nrow(iris), size = nrow(iris)*0.5)
-    train <- iris[index,]
+    train <- iris
 
     set.seed(1)
     model <- NeuralNetwork(
       Species ~ Sepal.Length + Sepal.Width + Petal.Length + Petal.Width,
       data = train, layers = c(5, 5), rep = 5, err.fct = "ce",
-      linear.output = FALSE, stepmax = 1000000, threshold = 0.5)
+      linear.output = FALSE, stepmax = 1000000, threshold = 0.001)
 
     for (predictor in syms(model$neural_network$model.list$variables)) {
         result_data <- prepare_data(model, predictor, nrepetitions = 5)
@@ -53,9 +50,7 @@ test_that("Data is correctly prepared for plotting with binary
     pima <- pima[complete.cases(pima), ]
     pima$test <- as.factor(pima$test)
     levels(pima$test) <- c("Negative", "Positive")
-    pima_size <- floor(0.75 * nrow(pima))
-    index <- sample(seq_len(nrow(pima)), size = pima_size)
-    train <- pima[index, ]
+    train <- pima
 
     set.seed(1)
     model <- NeuralNetwork(test ~ pregnant + glucose + diastolic + triceps +

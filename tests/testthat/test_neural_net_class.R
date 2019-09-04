@@ -1,15 +1,15 @@
 test_that("Creating NeuralNetwork for numerical dependent variable works", {
     # load library for getting Boston data set
     library(MASS)
-    data <- Boston
-
-    # create train data set
-    index <- sample(1:nrow(data), round(0.75*nrow(data)))
-    train <- data[index,]
+    data <- Boston; data$chas <- as.factor(data$chas)
+    factor_matrix <- class.ind(data$chas); colnames(factor_matrix) <- c(
+        "chas0","chas1")
+    train <- cbind(data[, -which(colnames(data) == "chas")],
+                   factor_matrix)
 
     # scale data set
-    scale_column <- function (column) {
-        if (!(is.numeric(column))){
+    scale_column <- function(column){
+        if (!(is.numeric(column))) {
             return(column)
         } else {
             min_col <- min(column)
@@ -34,13 +34,14 @@ test_that("Creating NeuralNetwork for numerical dependent variable works", {
 
     # fit test model
     set.seed(1)
-    model <- NeuralNetwork(medv ~ ., data = train, layers = c(5, 3),
+    model <- NeuralNetwork(medv ~ ., data = data, layers = c(5, 3),
                            scale = TRUE, linear.output = TRUE, threshold = 0.5)
 
     # test for correct model results
     expect_s3_class(model, "NeuralNetwork")
     expect_equal(model$neural_network$result.matrix, nn$result.matrix)
-    expect_equal(model$neural_network$data, nn$data)
+    expect_true(all.equal(model$neural_network$data, nn$data,
+                          check.attributes = FALSE))
     expect_equal(model$neural_network$model.list$response,
                  nn$model.list$response)
     expect_equal(model$neural_network$model.list$variables,
@@ -58,7 +59,7 @@ test_that("Creating NeuralNetwork for categorical dependent variable works", {
     data("iris")
 
     # prepare data for analysis
-    iris$setosa <- iris$Species=="setosa"
+    iris$setosa <- iris$Species == "setosa"
     iris$setosa <- iris$setosa + 0
     iris$versicolor <- iris$Species == "versicolor"
     iris$versicolor <- iris$versicolor + 0
@@ -66,8 +67,7 @@ test_that("Creating NeuralNetwork for categorical dependent variable works", {
     iris$virginica <- iris$virginica + 0
 
     # create test data set for the expected model
-    index <- sample(x = nrow(iris), size = nrow(iris)*0.5)
-    train_test <- iris[index,]
+    train_test <- iris
 
     # fit expected model
     set.seed(1)
@@ -115,15 +115,11 @@ test_that("Creating neural network for binary dependent variable works", {
     pima <- pima[complete.cases(pima), ]
     pima$test <- as.factor(pima$test)
     levels(pima$test) <- c("Negative", "Positive")
-    pima_size <- floor(0.75 * nrow(pima))
-
-    # create training set
-    index <- sample(seq_len(nrow(pima)), size = pima_size)
-    train <- pima[index, ]
+    train <- pima
 
     # scale data
-    scale_column <- function (column) {
-        if (!(is.numeric(column))){
+    scale_column <- function(column){
+        if (!(is.numeric(column))) {
             return(column)
         } else {
             min_col <- min(column)

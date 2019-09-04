@@ -1,8 +1,7 @@
 test_that("Plotting with numerical dependent variable works", {
     library(MASS)
-    data <- Boston
-    index <- sample(1:nrow(data), round(0.75*nrow(data)))
-    train <- data[index,]
+    data <- Boston; data$chas <- as.factor(data$chas)
+    train <- data
 
     set.seed(1)
     model <- NeuralNetwork(medv ~ ., data = train, layers = c(5, 3),
@@ -35,8 +34,7 @@ test_that("Plotting with numerical dependent variable works", {
 test_that("Plotting with categorical dependent variable works", {
     library(datasets)
     data("iris")
-    index <- sample(x = nrow(iris), size = nrow(iris)*0.5)
-    train_model <- iris[index,]
+    train_model <- iris
 
     set.seed(1)
     model <- NeuralNetwork(
@@ -81,9 +79,7 @@ test_that("Plotting with binary dependent variable works", {
     pima <- pima[complete.cases(pima), ]
     pima$test <- as.factor(pima$test)
     levels(pima$test) <- c("Negative", "Positive")
-    pima_size <- floor(0.75 * nrow(pima))
-    index <- sample(seq_len(nrow(pima)), size = pima_size)
-    train <- pima[index, ]
+    train <- pima
 
     set.seed(1)
     model <- NeuralNetwork(test ~ pregnant + glucose + diastolic + triceps +
