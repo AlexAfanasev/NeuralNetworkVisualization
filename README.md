@@ -73,16 +73,19 @@ model <- NeuralNetwork(
 plot_partial_dependencies(model, probs = c(0.1, 0.9), nrepetitions = 5,
                           type = "ggplotly")
 ```
+![Categorical Plot 1](inst/img/categorical_plot_1.png "fig:")
 
 ```r
 plot_partial_dependencies(model, predictors = "Sepal.Length")
 ```
+![Categorical Plot 2](inst/img/categorical_plot_2.png "fig:")
 
 ```r
 plot_partial_dependencies(model, predictors = c("Sepal.Length", "Petal.Length"),
                           type = "ggplotly", probs = c(0.1, 0.9),
                           nrepetitions = 20)
 ```
+![Categorical Plot 3](inst/img/categorical_plot_3.png "fig:")
 
 **Binary response variable:**
 ```r
@@ -108,23 +111,30 @@ model <- NeuralNetwork(test ~ pregnant + glucose + diastolic + triceps +
 
 plot_partial_dependencies(model, probs = c(0.1, 0.9), nrepetitions = 5)
 ```
+![Binary Plot 1](inst/img/binary_plot_1.png "fig:")
 
 ```r
 plot_partial_dependencies(model, predictors = "glucose")
 ```
+![Binary Plot 2](inst/img/binary_plot_2.png "fig:")
 
 ```r
 plot_partial_dependencies(model, predictors = c("pregnant", "diastolic"),
                           type = "ggplotly", probs = c(0.05, 0.95),
                           nrepetitions = 5)
 ```
+![Binary Plot 3](inst/img/binary_plot_3.png "fig:")
 
 ## Shiny App
+
+**Please run the shiny app within a modern browser. Dont be stupid tryng to use Microsoft Internet Explorer or Edge.**
+
 **Run the shiny app:**
 ```r
 library(NeuralNetworkVisualization)
 run_shiny_app()
 ```
+![Shiny App](inst/img/siny_app.png "fig:")
 
 ## Sources
 * https://towardsdatascience.com/first-neural-network-for-beginners-explained-with-code-4cfd37e06eaf
