@@ -1,6 +1,6 @@
 Package: NeuralNetworkVisualization
 Type: Package
-Title: Create Partial Dependence Plots for Neural Networks. Visualizes the marginal effects of Neural Networks.
+Title: Create Partial Dependence Plots for Neural Networks, Visualizes the marginal effects of Neural Networks
 Version: 0.0.0.9000
 Authors@R: as.person(c(
     "Alex Afanasev <alex.afanasev@stud.uni-goettingen.de> [aut, cre]",
