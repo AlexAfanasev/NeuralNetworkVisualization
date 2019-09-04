@@ -127,7 +127,7 @@ plot_partial_dependencies(model, predictors = c("pregnant", "diastolic"),
 
 ## Shiny App
 
-**Please run the shiny app within a modern browser. Dont be stupid tryng to use Microsoft Internet Explorer or Edge.**
+**Please run the shiny app within a modern browser. Dont be stupid trying to use Microsoft Internet Explorer or Edge.**
 
 **Run the shiny app:**
 ```r
