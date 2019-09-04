@@ -3,8 +3,7 @@ library(NeuralNetworkVisualization)
 # Example for Plotting with numerical dependent variable
 library(MASS)
 data <- Boston; data$chas <- as.factor(data$chas)
-index <- sample(1:nrow(data), round(0.75*nrow(data)))
-train <- data[index,]
+train <- data
 
 set.seed(1)
 model <- NeuralNetwork(medv ~ ., data = train, layers = c(5, 3),
@@ -20,20 +19,20 @@ plot_partial_dependencies(model, predictors = c("crim", "age"),
 # Example for Plotting with categorical dependent variable
 library(datasets)
 data("iris")
-index <- sample(x = nrow(iris), size = nrow(iris)*0.5)
-train_model <- iris[index,]
+train_model <- iris
 
 set.seed(1)
 model <- NeuralNetwork(
     Species ~ .,
     data = train_model, layers = c(5, 5), rep = 5, linear.output = FALSE,
-    err.fct = "ce", stepmax = 1000000, threshold = 0.5)
+    scale = TRUE, err.fct = "ce", stepmax = 1000000, threshold = 0.5)
 
-plot_partial_dependencies(model, probs = c(0.1, 0.9), nrepetitions = 5)
+plot_partial_dependencies(model, probs = c(0.1, 0.9), nrepetitions = 5,
+                          type = "ggplotly")
 plot_partial_dependencies(model, predictors = "Sepal.Length")
 plot_partial_dependencies(model, predictors = c("Sepal.Length", "Petal.Length"),
-                          type = "ggplotly", probs = c(0.05, 0.95),
-                          nrepetitions = 5)
+                          type = "ggplotly", probs = c(0.1, 0.9),
+                          nrepetitions = 20)
 
 # Example for Plotting with binary dependent variable
 library(faraway)
@@ -45,9 +44,7 @@ pima$bmi[pima$bmi == 0] <- NA
 pima <- pima[complete.cases(pima), ]
 pima$test <- as.factor(pima$test)
 levels(pima$test) <- c("Negative", "Positive")
-pima_size <- floor(0.75 * nrow(pima))
-index <- sample(seq_len(nrow(pima)), size = pima_size)
-train <- pima[index, ]
+train <- pima
 
 set.seed(1)
 model <- NeuralNetwork(test ~ pregnant + glucose + diastolic + triceps +
