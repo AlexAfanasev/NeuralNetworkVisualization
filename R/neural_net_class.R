@@ -71,7 +71,7 @@ NeuralNetwork <- function(f, data, layers, scale = FALSE, ...){
 }
 
 
-#' Returrns the data with added factor columns and changed formula
+#' Returns the data with added factor columns and changed formula
 #'
 #' @keywords internal
 create_factor_specification <- function(data, dependent, independent, f){
@@ -103,7 +103,7 @@ create_factor_specification <- function(data, dependent, independent, f){
     return(list(data = data, f = f, independent = independent))
 }
 
-#' Returrns the independent variables based on specification.
+#' Returns the independent variables based on specification.
 #'
 #' @keywords internal
 get_independent <- function(data, dependent_variable, specification){
@@ -116,7 +116,7 @@ get_independent <- function(data, dependent_variable, specification){
     }
 }
 
-#' Returrns the type for the dependent variable (numerical or categorical).
+#' Returns the type for the dependent variable (numerical or categorical).
 #'
 #' @keywords internal
 get_type <- function(data){

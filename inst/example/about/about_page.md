@@ -3,7 +3,7 @@
 This tool allows you to interactively visualize the partial dependencies of neural networks.
 
 Select the **<i class="fa fa-cog"></i> Settings** tab to upload a NeuralNetwork **.rds** file. 
-Afterwards you can change the settings for the plot you want to create.
+Afterwards, you can change the settings for the plot you want to create.
 
 Select the **<i class="fa fa-bar-chart"></i> Visualization** tab to see the created visualization. 
 
