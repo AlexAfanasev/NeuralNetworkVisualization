@@ -5,7 +5,7 @@ library(plotly)
 library(waiter)
 
 # Returns the about panel.
-about_panel <- function() {
+about_panel <- function(){
     about <- tabPanel(
         "About", icon = icon("info-circle"),
         includeMarkdown(file.path("about", "about_page.md")))
@@ -13,7 +13,7 @@ about_panel <- function() {
 }
 
 # Returns the settings panel.
-settings_panel <- function() {
+settings_panel <- function(){
     upload_panel <- tabPanel(
         "Settings", icon = icon("cog"), use_waiter(),
         h3("1. Upload NeuralNetwork", style = "color:blue"),
@@ -24,7 +24,7 @@ settings_panel <- function() {
 }
 
 # Returns the visualization panel.
-visualization_panel <- function() {
+visualization_panel <- function(){
     current_visualization_panel <- tabPanel(
         "Visualization", value = "panel3", icon = icon("bar-chart"),
         plotlyOutput("plot", width = "100%", height = "800"))

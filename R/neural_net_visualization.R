@@ -85,7 +85,7 @@ is_valid_probs <- function(probs){
     if (sum(probs) != 1) {
         stop("The prediction interval probabilities have to add up to one!")
     }
-    }
+}
 
 #' Returns the predictors for which to plot the partial dependencies.
 #'

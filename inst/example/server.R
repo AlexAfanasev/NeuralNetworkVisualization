@@ -5,7 +5,7 @@ library(plotly)
 library(waiter)
 library(tools)
 
-function (session, input, output) {
+function(session, input, output){
     variables <- reactiveValues(model = NULL)
 
     Dataset <- reactive({

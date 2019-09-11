@@ -79,8 +79,6 @@ create_factor_specification <- function(data, dependent, independent, f){
                                      (colnames(data) %in% independent)),
                            decreasing = TRUE)
 
-
-
     if (any(factor_columns)) {
         new_columns <- c()
         for (factor_column in factor_columns) {
