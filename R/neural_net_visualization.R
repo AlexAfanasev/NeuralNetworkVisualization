@@ -205,7 +205,8 @@ plot_single_numerical <- function(prepared_data, predictor, neural_net){
 #' @keywords internal
 plot_single_categorical <- function(prepared_data, predictor, neural_net){
     return(ggplot(data = prepared_data,
-                  aes(x = !!predictor, y = yhat, colour = class)) +
+                  aes(x = !!predictor, y = yhat, color = class, group = class,
+                      fill = class)) +
                geom_line(size = 1) + geom_point() + geom_ribbon(aes(
                    x = !!predictor, ymin = lwr, ymax = upr),
                    alpha = 0.25) +
