@@ -2,11 +2,11 @@
 % Please edit documentation in R/neural_net_class.R
 \name{create_factor_specification}
 \alias{create_factor_specification}
-\title{Returrns the data with added factor columns and changed formula}
+\title{Returns the data with added factor columns and changed formula}
 \usage{
 create_factor_specification(data, dependent, independent, f)
 }
 \description{
-Returrns the data with added factor columns and changed formula
+Returns the data with added factor columns and changed formula
 }
 \keyword{internal}

@@ -2,11 +2,11 @@
 % Please edit documentation in R/neural_net_class.R
 \name{get_type}
 \alias{get_type}
-\title{Returrns the type for the dependent variable (numerical or categorical).}
+\title{Returns the type for the dependent variable (numerical or categorical).}
 \usage{
 get_type(data)
 }
 \description{
-Returrns the type for the dependent variable (numerical or categorical).
+Returns the type for the dependent variable (numerical or categorical).
 }
 \keyword{internal}
