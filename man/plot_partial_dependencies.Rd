@@ -5,7 +5,8 @@
 \title{Function for plotting the partial dependencies of the created NeuralNetwork}
 \usage{
 plot_partial_dependencies(neural_net, predictors = "all", probs = c(0,
-  0), type = "ggplot", nrepetitions = 50)
+  0), type = "ggplot", nrepetitions = 50, parallel = FALSE,
+  use_stored_data = FALSE)
 }
 \arguments{
 \item{neural_net}{The NeuralNetwork instance, see:
@@ -22,6 +23,12 @@ interval. If booth are 0, intervals will not be plotted.}
 
 \item{nrepetitions}{Number of samples used within bootstrap for confidence
 intervals.}
+
+\item{parallel}{Boolean specifying if for multiple predictors selected the
+plotting data creation should be parallelized.}
+
+\item{use_stored_data}{Boolean specifying if the stored data within a model
+should be used. Raises an error if no stored data is available.}
 }
 \value{
 Created figure
@@ -32,17 +39,18 @@ Created figure
 }
 \examples{
 \dontrun{
-# Example: Numeric or Binary
+# Example: Numeric
 library(MASS)
 neural_network <- NeuralNetwork(f = "medv ~ .", data = Boston,
                                 layers = c(5, 3), scale = TRUE,
                                 linear.output = TRUE)
+
 plot_partial_dependencies(neural_network, predictors = "crim",
                           probs = c(0.2, 0.8), type = "ggplotly")
 plot_partial_dependencies(neural_network, predictors = c("crim", "age"))
 plot_partial_dependencies(neural_network, probs = c(0.1, 0.9))
 
-# Example: Categoric
+# Example: Categoric or Binary
 library(datasets)
 model <- NeuralNetwork(
    Species ~ Sepal.Length + Sepal.Width + Petal.Length + Petal.Width,

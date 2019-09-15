@@ -2,11 +2,14 @@
 % Please edit documentation in R/neural_net_visualization.R
 \name{plot_multiple}
 \alias{plot_multiple}
-\title{Plots partial dependencies for multiple predictors.}
+\title{Plots partial dependencies for multiple predictors. Default behaviour is that
+computations for data preparation will run parallely.}
 \usage{
-plot_multiple(neural_net, predictors, probs, nrepetitions)
+plot_multiple(neural_net, predictors, probs, nrepetitions, parallel,
+  use_stored_data)
 }
 \description{
-Plots partial dependencies for multiple predictors.
+Plots partial dependencies for multiple predictors. Default behaviour is that
+computations for data preparation will run parallely.
 }
 \keyword{internal}

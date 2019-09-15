@@ -4,7 +4,8 @@
 \alias{NeuralNetwork}
 \title{Create a NeuralNetwork for further visualization}
 \usage{
-NeuralNetwork(f, data, layers, scale = FALSE, ...)
+NeuralNetwork(f, data, layers, scale = FALSE, options = list(store =
+  FALSE, nrepetitions = 1000, probs = c(0.05, 0.95), parallel = TRUE), ...)
 }
 \arguments{
 \item{f}{A formula representing the model that should be fitted. Handles
@@ -16,6 +17,10 @@ all with y ~ . .}
 \item{layers}{Vector representing the number of layers that should be used.}
 
 \item{scale}{Boolean representing if the data should be scaled or not}
+
+\item{options}{List where you can specify that you want to run the bootstrap
+sampling directly in the model creation and than this data will be used
+for plotting the partial dependencies.}
 
 \item{...}{further parameters for neuralnet, see:
 \code{\link[neuralnet]{neuralnet}}}

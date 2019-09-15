@@ -13,7 +13,9 @@
 #' @param data The data that should be used for training the neural network.
 #' @param layers Vector representing the number of layers that should be used.
 #' @param scale Boolean representing if the data should be scaled or not
-
+#' @param options List where you can specify that you want to run the bootstrap
+#'   sampling directly in the model creation and than this data will be used
+#'   for plotting the partial dependencies.
 #'
 #' @return NeuralNetwork class containing the neuralnet, type of dependent
 #'   variable, name of dependent variable, layers, min and max of each numeric
@@ -38,7 +40,10 @@
 #'
 #' @name NeuralNetwork
 #' @export
-NeuralNetwork <- function(f, data, layers, scale = FALSE, ...){
+NeuralNetwork <- function(f, data, layers, scale = FALSE,
+                          options = list(store = FALSE, nrepetitions = 1000,
+                                         probs = c(0.05, 0.95),
+                                         parallel = TRUE), ...){
     f <- as.formula(f); row.names(data) <- NULL
     dependent <- all.vars(f[[2]])
     independent <- get_independent(data, dependent, all.vars(f[[3]]))
@@ -63,11 +68,16 @@ NeuralNetwork <- function(f, data, layers, scale = FALSE, ...){
 
     neural_network <- fit_neural_network(f, data, layers, type, dependent,
                                          independent, ...)
-    return(structure(
+
+    model <- structure(
         list(neural_network = neural_network,
              min_and_max_numeric_columns = min_and_max_numeric_columns,
              type = type, dependent = dependent, f = f, layers = layers,
-             scale = scale, additional = list(...)), class = "NeuralNetwork"))
+             scale = scale, additional = list(...)), class = "NeuralNetwork")
+
+    model <- add_bootstrap_data(model, options)
+
+    return(model)
 }
 
 
@@ -183,4 +193,41 @@ fit_neural_network_categorical <- function(f, data, layers, dependent,
         levels(data[[dependent]]), collapse = " + "), "~",
         paste(independent, collapse = "+"), sep = " "))
     return(neuralnet(f, data = data, hidden = layers, ...))
+}
+
+
+#' Adds bootstrap data to the model that will be used for plotting.
+#'
+#' @importFrom future plan multiprocess tweak sequential availableCores
+#' @importFrom magrittr %>%
+#' @importFrom tidyr gather
+#' @importFrom dplyr bind_rows
+#' @importFrom purrr map
+#' @keywords internal
+add_bootstrap_data <- function(neural_net, options){
+    if (isTRUE(options$store)) {
+        is_valid_nrepetitions(options$nrepetitions)
+        is_valid_probs(options$probs)
+
+        parallel <- ifelse(is.null(options$parallel), FALSE, options$parallel)
+        plan_process(parallel)
+
+        prediction_names <- ifelse(neural_net$type == "categorical",
+                                   yes = 2, no = 1)
+
+        prepared_data <- get_predictors(neural_net, "all") %>%
+            map(~ prepare_data(neural_net, .x, options$probs,
+                               options$nrepetitions)) %>%
+            map(~ gather(.x, "predictor", "values", prediction_names)) %>%
+            bind_rows()
+
+        plan_process(parallel = FALSE)
+
+        neural_net$stored_data <- prepared_data
+        neural_net$options <- options
+    } else  if (is.null(options$store)) {
+        stop("You have to specify the boolean store value inside the options
+             list if you want to store the data!")
+    }
+    return(neural_net)
 }

@@ -13,22 +13,27 @@
 #'   'ggplotly' if plotly should be used.
 #' @param nrepetitions Number of samples used within bootstrap for confidence
 #'   intervals.
+#' @param parallel Boolean specifying if for multiple predictors selected the
+#'   plotting data creation should be parallelized.
+#' @param use_stored_data Boolean specifying if the stored data within a model
+#'   should be used. Raises an error if no stored data is available.
 #'
 #' @return Created figure
 #'
 #' @examples
 #' \dontrun{
-#' # Example: Numeric or Binary
+#' # Example: Numeric
 #' library(MASS)
 #' neural_network <- NeuralNetwork(f = "medv ~ .", data = Boston,
 #'                                 layers = c(5, 3), scale = TRUE,
 #'                                 linear.output = TRUE)
+#'
 #' plot_partial_dependencies(neural_network, predictors = "crim",
 #'                           probs = c(0.2, 0.8), type = "ggplotly")
 #' plot_partial_dependencies(neural_network, predictors = c("crim", "age"))
 #' plot_partial_dependencies(neural_network, probs = c(0.1, 0.9))
 #'
-#' # Example: Categoric
+#' # Example: Categoric or Binary
 #' library(datasets)
 #' model <- NeuralNetwork(
 #'    Species ~ Sepal.Length + Sepal.Width + Petal.Length + Petal.Width,
@@ -45,16 +50,23 @@
 #' @importFrom plotly ggplotly layout
 #' @name plot_partial_dependencies
 #' @export
-plot_partial_dependencies <- function(neural_net, predictors = "all",
-                                      probs = c(0, 0), type = "ggplot",
-                                      nrepetitions = 50){
-    if (!all(probs == 0)) is_valid_probs(probs); is_valid_type(type)
+plot_partial_dependencies <- function(
+    neural_net, predictors = "all", probs = c(0, 0), type = "ggplot",
+    nrepetitions = 50, parallel = FALSE, use_stored_data = FALSE){
+    if (!all(probs == 0)) {
+        is_valid_probs(probs)
+        is_valid_nrepetitions(nrepetitions)
+    }
+
+    is_valid_type(type)
     predictors <- get_predictors(neural_net, predictors)
 
     if (length(predictors) > 1) {
-        figure <- plot_multiple(neural_net, predictors, probs, nrepetitions)
+        figure <- plot_multiple(neural_net, predictors, probs, nrepetitions,
+                                parallel, use_stored_data)
     } else {
-        figure <- plot_single(neural_net, predictors[[1]], probs, nrepetitions)
+        figure <- plot_single(neural_net, predictors[[1]], probs, nrepetitions,
+                              parallel, use_stored_data)
     }
 
     if (type == "ggplot") {
@@ -87,6 +99,19 @@ is_valid_probs <- function(probs){
     }
 }
 
+#' Checks for valid nrepetitions for the bootstrap confidence interval.
+#'
+#' @keywords internal
+is_valid_nrepetitions <- function(nrepetitions){
+    if (!is.numeric(nrepetitions)) {
+        stop("Please specify an integer of at least 50 for the number of
+             bootstrap repetitions")
+    } else if (nrepetitions < 50) {
+        stop("Please specify an integer of at least 50 for the number of
+         bootstrap repetitions")
+    }
+}
+
 #' Returns the predictors for which to plot the partial dependencies.
 #'
 #' @importFrom dplyr syms
@@ -111,28 +136,52 @@ get_predictors <- function(neural_net, predictors){
     }
 }
 
-#' Plots partial dependencies for multiple predictors.
+#' Plots partial dependencies for multiple predictors. Default behaviour is that
+#' computations for data preparation will run parallely.
 #'
 #' @importFrom magrittr %>%
 #' @importFrom tidyr gather
 #' @importFrom dplyr bind_rows
-#' @importFrom furrr future_map
-#' @importFrom future plan multiprocess
+#' @importFrom purrr map
 #' @keywords internal
-plot_multiple <- function(neural_net, predictors, probs, nrepetitions){
-    prediction_names <- ifelse(neural_net$type == "categorical",
-                               yes = 2, no = 1)
-
-    plan(multiprocess)
-    prepared_data <- predictors %>%
-        future_map(~ prepare_data(neural_net, .x, probs, nrepetitions)) %>%
-        future_map(~ gather(.x, "predictor", "values", prediction_names)) %>%
-        bind_rows()
+plot_multiple <- function(neural_net, predictors, probs, nrepetitions,
+                          parallel, use_stored_data){
+    if (isTRUE(use_stored_data)) {
+        if (is.null(neural_net$stored_data)) {
+            stop("There is no stored data available. Please create a
+                 NeuralNetwork with the options argument specified!")
+        } else {
+            prepared_data <- neural_net$stored_data[
+                neural_net$stored_data$predictor %in%
+                    as.character(predictors), ]
+        }
+    } else {
+        prediction_names <- ifelse(neural_net$type == "categorical",
+                                   yes = 2, no = 1)
+        plan_process(parallel)
+        prepared_data <- predictors %>%
+            map(~ prepare_data(neural_net, .x, probs, nrepetitions)) %>%
+            map(~ gather(.x, "predictor", "values", prediction_names)) %>%
+            bind_rows()
+        plan_process(parallel = FALSE)
+    }
 
     if (neural_net$type == "numerical") {
         return(plot_multiple_numerical(prepared_data, neural_net))
     } else if (neural_net$type == "categorical") {
         return(plot_multiple_categorical(prepared_data, neural_net))
+    }
+}
+
+#' Function for enabling multiprocessing.
+#'
+#' @importFrom future plan multiprocess sequential
+#' @keywords internal
+plan_process <- function(parallel){
+    if (isTRUE(parallel)) {
+        plan(multiprocess)
+    } else {
+        plan(sequential)
     }
 }
 
@@ -173,9 +222,27 @@ plot_multiple_categorical <- function(prepared_data, neural_net){
 
 #' Plots partial dependencies for single given predictor.
 #'
+#' @importFrom  magrittr %>%
+#' @importFrom dplyr rename
 #' @keywords internal
-plot_single <- function(neural_net, predictor, probs, nrepetitions){
-    prepared_data <- prepare_data(neural_net, predictor, probs, nrepetitions)
+plot_single <- function(neural_net, predictor, probs, nrepetitions, parallel,
+                        use_stored_data){
+    if (isTRUE(use_stored_data)) {
+        if (is.null(neural_net$stored_data)) {
+            stop("There is no stored data available. Please create a
+                 NeuralNetwork with the options argument specified!")
+        } else {
+            prepared_data <- neural_net$stored_data[
+                neural_net$stored_data$predictor %in% as.character(predictor), ]
+            prepared_data <- prepared_data %>% rename(!!predictor := values)
+        }
+    } else {
+        plan_process(parallel)
+        prepared_data <- prepare_data(neural_net, predictor, probs,
+                                      nrepetitions)
+        plan_process(parallel = FALSE)
+    }
+
     if (neural_net$type == "numerical") {
         return(plot_single_numerical(prepared_data, predictor, neural_net))
     } else if (neural_net$type == "categorical") {

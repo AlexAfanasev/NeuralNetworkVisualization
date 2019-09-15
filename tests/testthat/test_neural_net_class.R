@@ -3,7 +3,7 @@ test_that("Creating NeuralNetwork for numerical dependent variable works", {
     library(MASS)
     data <- Boston; data$chas <- as.factor(data$chas)
     factor_matrix <- class.ind(data$chas); colnames(factor_matrix) <- c(
-        "chas0","chas1")
+        "chas0", "chas1")
     train <- cbind(data[, -which(colnames(data) == "chas")],
                    factor_matrix)
 
@@ -34,8 +34,11 @@ test_that("Creating NeuralNetwork for numerical dependent variable works", {
 
     # fit test model
     set.seed(1)
-    model <- NeuralNetwork(medv ~ ., data = data, layers = c(5, 3),
-                           scale = TRUE, linear.output = TRUE, threshold = 0.5)
+    model_options <- list(store = TRUE, parallel = TRUE, probs = c(0.05, 0.95),
+                          nrepetitions = 50)
+    model <- NeuralNetwork(medv ~ ., data = train, layers = c(5, 3),
+                           scale = TRUE, linear.output = TRUE, threshold = 0.5,
+                           options = model_options)
 
     # test for correct model results
     expect_s3_class(model, "NeuralNetwork")
@@ -51,6 +54,8 @@ test_that("Creating NeuralNetwork for numerical dependent variable works", {
                  data.frame(min = mins, max = maxs))
     expect_equal(model$type, "numerical")
     expect_equal(model$dependent, "medv")
+    expect_equal(model$options, model_options)
+    expect_true(!is.null(model$stored_data))
 })
 
 test_that("Creating NeuralNetwork for categorical dependent variable works", {
@@ -83,10 +88,13 @@ test_that("Creating NeuralNetwork for categorical dependent variable works", {
 
     # fit test model
     set.seed(1)
+    model_options <- list(store = TRUE, parallel = TRUE, probs = c(0.05, 0.95),
+                          nrepetitions = 50)
     model <- NeuralNetwork(
         Species ~ Sepal.Length + Sepal.Width + Petal.Length + Petal.Width,
         data = train_model, layers = c(5, 5), rep = 5, err.fct = "ce",
-        linear.output = FALSE, stepmax = 1000000, threshold = 0.5)
+        linear.output = FALSE, stepmax = 1000000, threshold = 0.5,
+        options = model_options)
 
     # test for correct model results
     expect_s3_class(model, "NeuralNetwork")
@@ -100,12 +108,15 @@ test_that("Creating NeuralNetwork for categorical dependent variable works", {
     expect_equal(model$scale, FALSE)
     expect_equal(model$type, "categorical")
     expect_equal(model$dependent, "Species")
+    expect_equal(model$options, model_options)
+    expect_true(!is.null(model$stored_data))
 })
 
 test_that("Creating neural network for binary dependent variable works", {
     # load library for data
     library(faraway)
     library(nnet)
+
     # prepares data for analysis
     pima$glucose[pima$glucose == 0] <- NA
     pima$diastolic[pima$diastolic == 0] <- NA
@@ -141,14 +152,17 @@ test_that("Creating neural network for binary dependent variable works", {
     set.seed(1)
     nn <- neuralnet(Negative + Positive ~ pregnant + glucose + diastolic +
                         triceps + insulin + bmi + diabetes + age, hidden = 2,
-                    data = scaled, linear.output = FALSE, threshold = 0.5,
+                    data = scaled, linear.output = FALSE, threshold = 1.0,
                     stepmax = 1e6)
 
     set.seed(1)
+    model_options <- list(store = TRUE, parallel = TRUE, probs = c(0.05, 0.95),
+                          nrepetitions = 50)
     model <- NeuralNetwork(test ~ pregnant + glucose + diastolic + triceps +
                                insulin + bmi + diabetes + age, data = train,
                            layers = 2, scale = TRUE, linear.output = FALSE,
-                           stepmax = 1e6, threshold = 0.5)
+                           stepmax = 1e6, threshold = 1.0,
+                           options = model_options)
 
     # test for correct model results
     expect_s3_class(model, "NeuralNetwork")
@@ -163,4 +177,6 @@ test_that("Creating neural network for binary dependent variable works", {
                  data.frame(min = mins, max = maxs))
     expect_equal(model$type, "categorical")
     expect_equal(model$dependent, "test")
+    expect_equal(model$options, model_options)
+    expect_true(!is.null(model$stored_data))
 })

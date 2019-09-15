@@ -4,7 +4,8 @@
 \alias{plot_single}
 \title{Plots partial dependencies for single given predictor.}
 \usage{
-plot_single(neural_net, predictor, probs, nrepetitions)
+plot_single(neural_net, predictor, probs, nrepetitions, parallel,
+  use_stored_data)
 }
 \description{
 Plots partial dependencies for single given predictor.

@@ -185,33 +185,35 @@ compute_mean_prediction_categoric <- function(grid, neural_net, predictor){
 #' @importFrom tidyr gather
 #' @importFrom stringr str_replace
 #' @importFrom rlang sym
+#' @importFrom future.apply future_apply
 #' @keywords internal
 compute_bootstrap_ci <- function(partial_dependence, grid, predictor,
                                  neural_net, probs, nrepetitions){
     number_of_data_points <- nrow(neural_net$neural_network$data)
-    bootstrap_data <- matrix(nrow = nrow(partial_dependence),
-                             ncol = nrepetitions)
+    bootstrap_data <- matrix(nrow = number_of_data_points, ncol = nrepetitions)
 
-    for (current_rep in 1:nrepetitions) {
-        indices <- sample(1:number_of_data_points, size = number_of_data_points,
-                          replace = TRUE)
-        descaled_data <- descale_data(neural_net)
-        resampled_data_set <- descaled_data[indices, ]
-        args <- c(list(f = neural_net$f, data = resampled_data_set,
-                       layers = neural_net$layers, scale = neural_net$scale),
-                  neural_net$additional)
-        new_neural_net <- do.call(NeuralNetwork, args)
+    bootstrap_data <- future_apply(
+        bootstrap_data, 2,
+        function(x){
+            indices <- sample(1:number_of_data_points,
+                              size = number_of_data_points, replace = TRUE)
+            descaled_data <- descale_data(neural_net)
+            resampled_data_set <- descaled_data[indices, ]
+            args <- c(list(f = neural_net$f, data = resampled_data_set,
+                           layers = neural_net$layers, scale = neural_net$scale),
+                      neural_net$additional)
+            new_neural_net <- do.call(NeuralNetwork, args)
 
-        if (new_neural_net$type == "numerical") {
-            new_partial_dependence <- compute_mean_prediction_numeric(
-                grid, new_neural_net, predictor)
-        } else {
-            new_partial_dependence <- compute_mean_prediction_categoric(
-                grid, new_neural_net, predictor)
-        }
+            if (new_neural_net$type == "numerical") {
+                new_partial_dependence <- compute_mean_prediction_numeric(
+                    grid, new_neural_net, predictor)
+            } else {
+                new_partial_dependence <- compute_mean_prediction_categoric(
+                    grid, new_neural_net, predictor)
+            }
 
-        bootstrap_data[, current_rep] <- new_partial_dependence$yhat
-    }
+            return(new_partial_dependence$yhat)
+    })
 
     partial_dependence$yhat <- apply(bootstrap_data, 1, mean)
     partial_dependence[, c("lwr", "upr")] <- t(apply(bootstrap_data, 1,
