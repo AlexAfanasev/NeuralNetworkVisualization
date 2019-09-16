@@ -4,7 +4,7 @@
 \alias{plan_process}
 \title{Function for enabling multiprocessing.}
 \usage{
-plan_process(parallel)
+plan_process(parallel, clusters = NULL)
 }
 \description{
 Function for enabling multiprocessing.

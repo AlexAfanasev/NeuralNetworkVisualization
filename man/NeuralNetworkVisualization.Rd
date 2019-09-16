@@ -4,8 +4,11 @@
 \name{NeuralNetworkVisualization}
 \alias{NeuralNetworkVisualization}
 \alias{NeuralNetworkVisualization-package}
-\title{NeuralNetworkVisualization: Create Partial Dependence Plots for Neural Networks. Visualizes the marginal effects of Neural Networks.}
+\title{NeuralNetworkVisualization: Create Partial Dependence Plots for Neural Networks.}
 \description{
 NeuralNetworkVisualization is a R Package for creating beautiful partial
   dependence plots for Neural Networks using ggplot2, plotly and shiny.
+  It is possible to add confidence intervals created with a bootstrap
+  procedure. There are three prefitted models that can be used for testing.
+  You can acess them with the example_nn_model function.
 }

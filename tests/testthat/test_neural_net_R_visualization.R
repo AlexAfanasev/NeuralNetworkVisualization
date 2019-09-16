@@ -4,8 +4,8 @@ test_that("Plotting with numerical dependent variable works", {
     train <- data
 
     set.seed(1)
-    model_options <- list(store = TRUE, parallel = TRUE, probs = c(0.05, 0.95),
-                          nrepetitions = 50)
+    model_options <- list(store = TRUE, parallel = FALSE, probs = c(0.05, 0.95),
+                          nrepetitions = 2)
     model <- NeuralNetwork(medv ~ ., data = train, layers = c(5, 3),
                            scale = TRUE, linear.output = TRUE, threshold = 0.5,
                            options = model_options)
@@ -14,10 +14,10 @@ test_that("Plotting with numerical dependent variable works", {
     expect_error(plot_partial_dependencies(model, predictors = "crim"), NA)
     expect_error(plot_partial_dependencies(
         model, predictors = "crim", type = "ggplotly", probs = c(0.2, 0.8),
-        nrepetitions = 50, parallel = TRUE), NA)
+        nrepetitions = 2, parallel = FALSE), NA)
     expect_error(plot_partial_dependencies(
         model, predictors = c("crim", "age"), probs = c(0.1, 0.9),
-        nrepetitions = 50, parallel = TRUE), NA)
+        nrepetitions = 2, parallel = FALSE), NA)
     expect_error(plot_partial_dependencies(
         model, predictors = c("crim", "age"), type = "ggplotly"), NA)
     expect_error(plot_partial_dependencies(model, use_stored_data = TRUE), NA)
@@ -48,8 +48,8 @@ test_that("Plotting with categorical dependent variable works", {
     train_model <- iris
 
     set.seed(1)
-    model_options <- list(store = TRUE, parallel = TRUE, probs = c(0.05, 0.95),
-                          nrepetitions = 50)
+    model_options <- list(store = TRUE, parallel = FALSE, probs = c(0.05, 0.95),
+                          nrepetitions = 2)
     model <- NeuralNetwork(
         Species ~ Sepal.Length + Sepal.Width + Petal.Length + Petal.Width,
         data = train_model, layers = c(5, 5), rep = 5, err.fct = "ce",
@@ -61,12 +61,12 @@ test_that("Plotting with categorical dependent variable works", {
         model, predictors = "Sepal.Length"), NA)
     expect_error(plot_partial_dependencies(
         model, predictors = "Sepal.Length", type = "ggplotly",
-        probs = c(0.2, 0.8), nrepetitions = 50, parallel = TRUE), NA)
+        probs = c(0.2, 0.8), nrepetitions = 2, parallel = FALSE), NA)
     expect_error(plot_partial_dependencies(
         model, predictors = c("Sepal.Length", "Petal.Length")), NA)
     expect_error(plot_partial_dependencies(
         model, predictors = c("Sepal.Length", "Petal.Length"),
-        probs = c(0.1, 0.9), nrepetitions = 50, parallel = TRUE), NA)
+        probs = c(0.1, 0.9), nrepetitions = 2, parallel = FALSE), NA)
     expect_error(plot_partial_dependencies(
         model, predictors = c("Sepal.Length", "Petal.Length"),
         type = "ggplotly"), NA)
@@ -106,8 +106,8 @@ test_that("Plotting with binary dependent variable works", {
     train <- pima
 
     set.seed(1)
-    model_options <- list(store = TRUE, parallel = TRUE, probs = c(0.05, 0.95),
-                          nrepetitions = 50)
+    model_options <- list(store = TRUE, parallel = FALSE, probs = c(0.05, 0.95),
+                          nrepetitions = 2)
     model <- NeuralNetwork(test ~ pregnant + glucose + diastolic + triceps +
                                insulin + bmi + diabetes + age,
                            data = train, layers = 2, linear.output = FALSE,
@@ -120,10 +120,10 @@ test_that("Plotting with binary dependent variable works", {
         model, predictors = c("pregnant", "diastolic")), NA)
     expect_error(plot_partial_dependencies(
         model, predictors = "glucose", type = "ggplotly",
-        probs = c(0.2, 0.8), nrepetitions = 50, parallel = TRUE), NA)
+        probs = c(0.2, 0.8), nrepetitions = 2, parallel = FALSE), NA)
     expect_error(plot_partial_dependencies(
         model, predictors = c("pregnant", "diastolic"),
-        probs = c(0.1, 0.9), nrepetitions = 50, parallel = TRUE), NA)
+        probs = c(0.1, 0.9), nrepetitions = 2, parallel = FALSE), NA)
     expect_error(plot_partial_dependencies(
         model, predictors = c("pregnant", "diastolic"), type = "ggplotly"), NA)
     expect_error(plot_partial_dependencies(model, use_stored_data = TRUE), NA)

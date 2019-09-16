@@ -34,8 +34,8 @@ test_that("Creating NeuralNetwork for numerical dependent variable works", {
 
     # fit test model
     set.seed(1)
-    model_options <- list(store = TRUE, parallel = TRUE, probs = c(0.05, 0.95),
-                          nrepetitions = 50)
+    model_options <- list(store = TRUE, parallel = FALSE, probs = c(0.05, 0.95),
+                          nrepetitions = 2)
     model <- NeuralNetwork(medv ~ ., data = train, layers = c(5, 3),
                            scale = TRUE, linear.output = TRUE, threshold = 0.5,
                            options = model_options)
@@ -88,8 +88,8 @@ test_that("Creating NeuralNetwork for categorical dependent variable works", {
 
     # fit test model
     set.seed(1)
-    model_options <- list(store = TRUE, parallel = TRUE, probs = c(0.05, 0.95),
-                          nrepetitions = 50)
+    model_options <- list(store = TRUE, parallel = FALSE, probs = c(0.05, 0.95),
+                          nrepetitions = 2)
     model <- NeuralNetwork(
         Species ~ Sepal.Length + Sepal.Width + Petal.Length + Petal.Width,
         data = train_model, layers = c(5, 5), rep = 5, err.fct = "ce",
@@ -156,8 +156,8 @@ test_that("Creating neural network for binary dependent variable works", {
                     stepmax = 1e6)
 
     set.seed(1)
-    model_options <- list(store = TRUE, parallel = TRUE, probs = c(0.05, 0.95),
-                          nrepetitions = 50)
+    model_options <- list(store = TRUE, parallel = FALSE, probs = c(0.05, 0.95),
+                          nrepetitions = 2)
     model <- NeuralNetwork(test ~ pregnant + glucose + diastolic + triceps +
                                insulin + bmi + diabetes + age, data = train,
                            layers = 2, scale = TRUE, linear.output = FALSE,
@@ -179,4 +179,27 @@ test_that("Creating neural network for binary dependent variable works", {
     expect_equal(model$dependent, "test")
     expect_equal(model$options, model_options)
     expect_true(!is.null(model$stored_data))
+})
+
+test_that("Receiving example neural network works", {
+    categorical_model <- example_nn_model("categorical")
+    expect_s3_class(categorical_model, "NeuralNetwork")
+    expect_equal(categorical_model$type, "categorical")
+
+    binary_model <- example_nn_model("binary")
+    expect_s3_class(binary_model, "NeuralNetwork")
+    expect_equal(binary_model$type, "categorical")
+
+    numerical_model <- example_nn_model("numerical")
+    expect_s3_class(numerical_model, "NeuralNetwork")
+    expect_equal(numerical_model$type, "numerical")
+})
+
+test_that("NeuralNetwork methods work", {
+    model <- example_nn_model("categorical")
+    expect_error(plot(model), NA)
+    expect_error(predict(
+        model, newdata = data.frame(Sepal.Length = 1, Petal.Length = 1,
+                                    Sepal.Width = 1, Petal.Width = 1)), NA)
+    expect_error(summary(model), NA)
 })

@@ -104,10 +104,10 @@ is_valid_probs <- function(probs){
 #' @keywords internal
 is_valid_nrepetitions <- function(nrepetitions){
     if (!is.numeric(nrepetitions)) {
-        stop("Please specify an integer of at least 50 for the number of
-             bootstrap repetitions")
-    } else if (nrepetitions < 50) {
-        stop("Please specify an integer of at least 50 for the number of
+        stop("Please specify an integer for the number of bootstrap
+             repetitions")
+    } else if (nrepetitions < 2) {
+        stop("Please specify an integer of at least 2 for the number of
          bootstrap repetitions")
     }
 }
@@ -143,6 +143,7 @@ get_predictors <- function(neural_net, predictors){
 #' @importFrom tidyr gather
 #' @importFrom dplyr bind_rows
 #' @importFrom purrr map
+#' @importFrom parallel makeCluster detectCores stopCluster
 #' @keywords internal
 plot_multiple <- function(neural_net, predictors, probs, nrepetitions,
                           parallel, use_stored_data){
@@ -158,12 +159,14 @@ plot_multiple <- function(neural_net, predictors, probs, nrepetitions,
     } else {
         prediction_names <- ifelse(neural_net$type == "categorical",
                                    yes = 2, no = 1)
-        plan_process(parallel)
+        num_clusters <- ifelse(isTRUE(parallel), detectCores(), 1)
+        clusters <- makeCluster(num_clusters)
+        plan_process(parallel, clusters)
         prepared_data <- predictors %>%
             map(~ prepare_data(neural_net, .x, probs, nrepetitions)) %>%
             map(~ gather(.x, "predictor", "values", prediction_names)) %>%
             bind_rows()
-        plan_process(parallel = FALSE)
+        stopCluster(clusters)
     }
 
     if (neural_net$type == "numerical") {
@@ -175,11 +178,11 @@ plot_multiple <- function(neural_net, predictors, probs, nrepetitions,
 
 #' Function for enabling multiprocessing.
 #'
-#' @importFrom future plan multiprocess sequential
+#' @importFrom future plan cluster sequential
 #' @keywords internal
-plan_process <- function(parallel){
+plan_process <- function(parallel, clusters = NULL){
     if (isTRUE(parallel)) {
-        plan(multiprocess)
+        plan(cluster, workers = clusters)
     } else {
         plan(sequential)
     }
@@ -224,6 +227,7 @@ plot_multiple_categorical <- function(prepared_data, neural_net){
 #'
 #' @importFrom  magrittr %>%
 #' @importFrom dplyr rename
+#' @importFrom parallel makeCluster detectCores stopCluster
 #' @keywords internal
 plot_single <- function(neural_net, predictor, probs, nrepetitions, parallel,
                         use_stored_data){
@@ -237,10 +241,12 @@ plot_single <- function(neural_net, predictor, probs, nrepetitions, parallel,
             prepared_data <- prepared_data %>% rename(!!predictor := values)
         }
     } else {
-        plan_process(parallel)
+        num_clusters <- ifelse(isTRUE(parallel), detectCores(), 1)
+        clusters <- makeCluster(num_clusters)
+        plan_process(parallel, clusters)
         prepared_data <- prepare_data(neural_net, predictor, probs,
                                       nrepetitions)
-        plan_process(parallel = FALSE)
+        stopCluster(clusters)
     }
 
     if (neural_net$type == "numerical") {

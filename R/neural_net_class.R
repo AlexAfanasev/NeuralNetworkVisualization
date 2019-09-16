@@ -203,17 +203,20 @@ fit_neural_network_categorical <- function(f, data, layers, dependent,
 #' @importFrom tidyr gather
 #' @importFrom dplyr bind_rows
 #' @importFrom purrr map
+#' @importFrom parallel makeCluster detectCores stopCluster
 #' @keywords internal
 add_bootstrap_data <- function(neural_net, options){
     if (isTRUE(options$store)) {
         is_valid_nrepetitions(options$nrepetitions)
         is_valid_probs(options$probs)
 
-        parallel <- ifelse(is.null(options$parallel), FALSE, options$parallel)
-        plan_process(parallel)
-
         prediction_names <- ifelse(neural_net$type == "categorical",
                                    yes = 2, no = 1)
+        parallel <- ifelse(is.null(options$parallel), FALSE, options$parallel)
+
+        num_clusters <- ifelse(isTRUE(parallel), detectCores(), 1)
+        clusters <- makeCluster(num_clusters)
+        plan_process(parallel, clusters)
 
         prepared_data <- get_predictors(neural_net, "all") %>%
             map(~ prepare_data(neural_net, .x, options$probs,
@@ -221,7 +224,7 @@ add_bootstrap_data <- function(neural_net, options){
             map(~ gather(.x, "predictor", "values", prediction_names)) %>%
             bind_rows()
 
-        plan_process(parallel = FALSE)
+        stopCluster(clusters)
 
         neural_net$stored_data <- prepared_data
         neural_net$options <- options
@@ -230,4 +233,40 @@ add_bootstrap_data <- function(neural_net, options){
              list if you want to store the data!")
     }
     return(neural_net)
+}
+
+#' Plot method for neural network.
+#'
+#' @param x Fitted NeuralNetwork model
+#' @param ... further parameters for plot neuralnet, see:
+#'   \code{\link[neuralnet]{plot.nn}}
+#'
+#' @export
+plot.NeuralNetwork <- function(x, ...){
+    return(plot(x = x$neural_network, ...))
+}
+
+#' Predict method for neural network.
+#'
+#' @param object Fitted NeuralNetwork model
+#' @param ... further parameters for predict neuralnet, see:
+#'   \code{\link[neuralnet]{predict.nn}}
+#'
+#' @export
+predict.NeuralNetwork <- function(object, ...){
+    return(predict(object$neural_network, ...))
+}
+
+#' Summary method for neural network.
+#'
+#' @param object Fitted NeuralNetwork model
+#' @param ... further parameters for summary method, see: \code{\link{summary}}
+#' @export
+summary.NeuralNetwork <- function(object, ...){
+    ans <- list(
+        formula = object$f, type = object$type, scale = object$scale,
+        stored_data = head(object$stored_data, 5),  hidden = object$layers,
+        result.matrix = object$neural_network$result.matrix)
+    class(ans) <- "summary.NeuralNetwork"
+    return(ans)
 }
