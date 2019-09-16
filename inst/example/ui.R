@@ -17,8 +17,20 @@ settings_panel <- function(){
     upload_panel <- tabPanel(
         "Settings", icon = icon("cog"), use_waiter(),
         h3("1. Upload NeuralNetwork", style = "color:blue"),
-        fileInput("datafile", "Choose NeuralNetwork File", multiple = FALSE),
-        uiOutput("networkplotting"),
+        radioGroupButtons(
+            inputId = "model_setting",
+            label = "Model Setup",
+            choices = c("Upload .rds file", "Use model from R global env.",
+                        "Use example model"),
+            selected = "Upload .rds file",
+            checkIcon = list(
+                yes = tags$i(class = "fa fa-check-square",
+                             style = "color: steelblue"),
+                no = tags$i(class = "fa fa-square-o",
+                            style = "color: steelblue"))
+        ),
+        uiOutput("networkupload"),
+        uiOutput("networkplotting1"),
         br())
     return(upload_panel)
 }
@@ -46,17 +58,17 @@ tagList(
     ),
     div(
         div(
-    fluidPage(
-        br(),
-        titlePanel("Partial Dependencies for Neural Networks"),
-        br(),
-        tabsetPanel(
-            id = "inTabset",
-            about_panel(),
-            settings_panel(),
-            visualization_panel(),
-            type = "tabs"))
-        ),
-    style = "margin-left:auto;margin-right:auto;width:90%;"
+            fluidPage(
+                br(),
+                titlePanel("Partial Dependencies for Neural Networks"),
+                br(),
+                tabsetPanel(
+                    id = "inTabset",
+                    about_panel(),
+                    settings_panel(),
+                    visualization_panel(),
+                    type = "tabs"))
+            ),
+        style = "margin-left:auto;margin-right:auto;width:90%;"
     )
 )
