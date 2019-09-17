@@ -12,7 +12,6 @@ system.time(
                            options = list(store = TRUE, parallel = TRUE,
                                           probs = c(0.05, 0.95),
                                           nrepetitions = 1000)))
-saveRDS(model, "numerical.rds")
 
 plot_partial_dependencies(model, use_stored_data = TRUE, type = "ggplotly")
 plot_partial_dependencies(model, predictors = "crim", use_stored_data = TRUE)
@@ -20,6 +19,8 @@ plot_partial_dependencies(model, predictors = "crim")
 plot_partial_dependencies(model, predictors = c("crim", "age"),
                           type = "ggplotly", probs = c(0.05, 0.95),
                           nrepetitions = 100, parallel = TRUE)
+
+saveRDS(model, "numerical.rds")
 
 # Example for Plotting with categorical dependent variable
 library(datasets)
@@ -34,7 +35,6 @@ system.time(
         threshold = 0.5, options = list(
             store = TRUE, parallel = TRUE, nrepetitions = 1000,
             probs = c(0.05, 0.95))))
-saveRDS(model, "categorical.rds")
 
 plot_partial_dependencies(model, type = "ggplotly", use_stored_data = TRUE)
 plot_partial_dependencies(model, predictors = "Sepal.Length",
@@ -43,6 +43,8 @@ plot_partial_dependencies(model, predictors = "Sepal.Length")
 plot_partial_dependencies(model, predictors = c("Sepal.Length", "Petal.Length"),
                           type = "ggplotly", probs = c(0.1, 0.9),
                           nrepetitions = 100, parallel = TRUE)
+
+saveRDS(model, "categorical.rds")
 
 # Example for Plotting with binary dependent variable
 library(faraway)
@@ -64,7 +66,6 @@ system.time(
         linear.output = FALSE, threshold = 1.0, stepmax = 1e6, scale = TRUE,
         options = list(store = TRUE, parallel = TRUE, probs = c(0.05, 0.95),
                        nrepetitions = 1000)))
-saveRDS(model, "binary.rds")
 
 plot_partial_dependencies(model, use_stored_data = TRUE, type = "ggplotly")
 plot_partial_dependencies(model, predictors = "glucose", use_stored_data = TRUE)
@@ -72,3 +73,5 @@ plot_partial_dependencies(model, predictors = "glucose")
 plot_partial_dependencies(model, predictors = c("pregnant", "diastolic"),
                           type = "ggplotly", probs = c(0.05, 0.95),
                           nrepetitions = 100, parallel = TRUE)
+
+saveRDS(model, "binary.rds")
