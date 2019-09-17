@@ -96,7 +96,8 @@ create_factor_specification <- function(data, dependent, independent, f){
             levels(column) <- paste(colnames(data)[factor_column],
                                     levels(column), sep = "")
 
-            identifier <- class.ind(column)
+            identifier <- class.ind(column)[, 1:(length(levels(column)) - 1),
+                                            drop = FALSE]
             new_columns <- c(new_columns, colnames(identifier))
             rownames(identifier) <- rownames(data)
             data <- cbind(data, identifier); data <- data[, -factor_column]
