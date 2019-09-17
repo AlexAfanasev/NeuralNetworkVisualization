@@ -222,16 +222,16 @@ function(session, input, output){
                          style = "color:white;"))
             )
 
-            if (input$bootstrap) {
+            if (input$stored_data) {
+                my_plot <- plot_partial_dependencies(
+                    variables$model, input$plotting, type = "ggplotly",
+                    use_stored_data = TRUE)
+            } else if (input$bootstrap) {
                 my_plot <- plot_partial_dependencies(
                     variables$model, input$plotting, type = "ggplotly",
                     probs = c(input$lower, input$upper),
                     nrepetitions = input$nrepetitions,
                     parallel = input$parallel)
-            } else if (input$stored_data) {
-                my_plot <- plot_partial_dependencies(
-                    variables$model, input$plotting, type = "ggplotly",
-                    use_stored_data = TRUE)
             } else {
                 my_plot <- plot_partial_dependencies(
                     variables$model, input$plotting, type = "ggplotly")
