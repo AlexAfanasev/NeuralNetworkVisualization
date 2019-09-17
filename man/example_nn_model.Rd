@@ -2,7 +2,7 @@
 % Please edit documentation in R/NeuralNetworkVisualization.R
 \name{example_nn_model}
 \alias{example_nn_model}
-\title{Returns example models by type of response.}
+\title{Returns example models by type of response}
 \usage{
 example_nn_model(type)
 }
@@ -14,7 +14,7 @@ NeuralNetwork class
 }
 \description{
 Each model has stored data available with 1000 bootstrap iterations and a
-90% confidence interval. The code that fitted the models can be found here:
+90\% confidence interval. The code that fitted the models can be found here:
 \url{https://github.com/AlexAfanasev/NeuralNetworkVisualization/blob/master/inst/examples.R}
 }
 \examples{

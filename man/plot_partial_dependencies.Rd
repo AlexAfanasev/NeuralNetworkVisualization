@@ -16,9 +16,9 @@ plot_partial_dependencies(neural_net, predictors = "all", probs = c(0,
 plot the partial dependencies.}
 
 \item{probs}{Vector of lower and upper bound probabilities for the confidence
-interval. If booth are 0, intervals will not be plotted.}
+interval. If both are 0, intervals will not be plotted.}
 
-\item{type}{Either 'ggplot' if the plot should be created using ggplot or
+\item{type}{Either 'ggplot' if the plot should be created using 'ggplot' or
 'ggplotly' if plotly should be used.}
 
 \item{nrepetitions}{Number of samples used within bootstrap for confidence
@@ -34,7 +34,7 @@ should be used. Raises an error if no stored data is available.}
 Created figure
 }
 \description{
-\code{plot_partial_dependencies} plots the partial dependencies for
+\code{plot_partial_dependencies} creates the partial dependence plot for
   the specified predictors.
 }
 \examples{

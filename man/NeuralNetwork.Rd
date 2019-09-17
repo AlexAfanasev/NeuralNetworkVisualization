@@ -18,9 +18,9 @@ all with y ~ . .}
 
 \item{scale}{Boolean representing if the data should be scaled or not}
 
-\item{options}{List where you can specify that you want to run the bootstrap
-sampling directly in the model creation and than this data will be used
-for plotting the partial dependencies.}
+\item{options}{List to specify that you want to run the bootstrap
+sampling directly in the model creation. Then this data will be used
+for creating the partial dependence plots.}
 
 \item{...}{further parameters for neuralnet, see:
 \code{\link[neuralnet]{neuralnet}}}
@@ -31,7 +31,7 @@ NeuralNetwork class containing the neuralnet, type of dependent
   column and the additional parameters provided.
 }
 \description{
-\code{NeuralNetwork} Returns the trained neural network
+\code{NeuralNetwork} returns the trained neural network
 }
 \details{
 This is a S3 class. It defines a neural network and has the
