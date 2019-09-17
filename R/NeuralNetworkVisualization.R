@@ -10,10 +10,10 @@
 #' @name NeuralNetworkVisualization
 NULL
 
-#' Returns example models by type of response.
+#' Returns example models by type of response
 #'
 #' Each model has stored data available with 1000 bootstrap iterations and a
-#' 90% confidence interval. The code that fitted the models can be found here:
+#' 90\% confidence interval. The code that fitted the models can be found here:
 #' \url{https://github.com/AlexAfanasev/NeuralNetworkVisualization/blob/master/inst/examples.R}
 #'
 #' @return NeuralNetwork class

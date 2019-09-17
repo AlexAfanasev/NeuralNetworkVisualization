@@ -1,6 +1,6 @@
 #' Create a NeuralNetwork for further visualization
 #'
-#' \code{NeuralNetwork} Returns the trained neural network
+#' \code{NeuralNetwork} returns the trained neural network
 #'
 #' This is a S3 class. It defines a neural network and has the
 #' plot_partial_dependencies method for plotting marginal effects.
@@ -13,9 +13,9 @@
 #' @param data The data that should be used for training the neural network.
 #' @param layers Vector representing the number of layers that should be used.
 #' @param scale Boolean representing if the data should be scaled or not
-#' @param options List where you can specify that you want to run the bootstrap
-#'   sampling directly in the model creation and than this data will be used
-#'   for plotting the partial dependencies.
+#' @param options List to specify that you want to run the bootstrap
+#'   sampling directly in the model creation. Then this data will be used
+#'   for creating the partial dependence plots.
 #'
 #' @return NeuralNetwork class containing the neuralnet, type of dependent
 #'   variable, name of dependent variable, layers, min and max of each numeric

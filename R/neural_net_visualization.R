@@ -1,6 +1,6 @@
 #' Function for plotting the partial dependencies of the created NeuralNetwork
 #'
-#' \code{plot_partial_dependencies} plots the partial dependencies for
+#' \code{plot_partial_dependencies} creates the partial dependence plot for
 #'   the specified predictors.
 #'
 #' @param neural_net The NeuralNetwork instance, see:
@@ -8,8 +8,8 @@
 #' @param predictors Vector of predictors of the neural network for which to
 #'   plot the partial dependencies.
 #' @param probs Vector of lower and upper bound probabilities for the confidence
-#'   interval. If booth are 0, intervals will not be plotted.
-#' @param type Either 'ggplot' if the plot should be created using ggplot or
+#'   interval. If both are 0, intervals will not be plotted.
+#' @param type Either 'ggplot' if the plot should be created using 'ggplot' or
 #'   'ggplotly' if plotly should be used.
 #' @param nrepetitions Number of samples used within bootstrap for confidence
 #'   intervals.
