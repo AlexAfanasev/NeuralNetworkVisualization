@@ -14,12 +14,13 @@ all with y ~ . .}
 
 \item{data}{The data that should be used for training the neural network.}
 
-\item{layers}{Vector representing the number of layers that should be used.}
+\item{layers}{Vector representing the number of hidden layers that should be
+used.}
 
-\item{scale}{Boolean representing if the data should be scaled or not}
+\item{scale}{Boolean representing if the data should be scaled or not.}
 
 \item{options}{List to specify that you want to run the bootstrap
-sampling directly in the model creation. Then this data will be used
+sampling directly in the model creation. Then this data can be used
 for creating the partial dependence plots.}
 
 \item{...}{further parameters for neuralnet, see:
@@ -28,20 +29,21 @@ for creating the partial dependence plots.}
 \value{
 NeuralNetwork class containing the neuralnet, type of dependent
   variable, name of dependent variable, layers, min and max of each numeric
-  column and the additional parameters provided.
+  column, additional parameters provided and stored data if specified.
 }
 \description{
 \code{NeuralNetwork} returns the trained neural network
 }
 \details{
 This is a S3 class. It defines a neural network and has the
-plot_partial_dependencies method for plotting marginal effects.
+plot_partial_dependencies method for plotting marginal effects. Additionally,
+you can use plot, predict and summary.
 }
 \examples{
 \dontrun{
 # Example: Numeric
 library(MASS)
-neural_network <- NeuralNetwork(f = "medv ~ .", data = Boston,
+neural_network <- NeuralNetwork(f = medv ~ ., data = Boston,
                                 layers = c(5, 3), scale = TRUE,
                                 linear.output = TRUE)
 

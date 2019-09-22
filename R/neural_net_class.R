@@ -3,7 +3,8 @@
 #' \code{NeuralNetwork} returns the trained neural network
 #'
 #' This is a S3 class. It defines a neural network and has the
-#' plot_partial_dependencies method for plotting marginal effects.
+#' plot_partial_dependencies method for plotting marginal effects. Additionally,
+#' you can use plot, predict and summary.
 #'
 #' @param ... further parameters for neuralnet, see:
 #'   \code{\link[neuralnet]{neuralnet}}
@@ -11,21 +12,22 @@
 #'   categorical, binary and numerical data. Specify each column separately or
 #'   all with y ~ . .
 #' @param data The data that should be used for training the neural network.
-#' @param layers Vector representing the number of layers that should be used.
-#' @param scale Boolean representing if the data should be scaled or not
+#' @param layers Vector representing the number of hidden layers that should be
+#'   used.
+#' @param scale Boolean representing if the data should be scaled or not.
 #' @param options List to specify that you want to run the bootstrap
-#'   sampling directly in the model creation. Then this data will be used
+#'   sampling directly in the model creation. Then this data can be used
 #'   for creating the partial dependence plots.
 #'
 #' @return NeuralNetwork class containing the neuralnet, type of dependent
 #'   variable, name of dependent variable, layers, min and max of each numeric
-#'   column and the additional parameters provided.
+#'   column, additional parameters provided and stored data if specified.
 #'
 #' @examples
 #' \dontrun{
 #' # Example: Numeric
 #' library(MASS)
-#' neural_network <- NeuralNetwork(f = "medv ~ .", data = Boston,
+#' neural_network <- NeuralNetwork(f = medv ~ ., data = Boston,
 #'                                 layers = c(5, 3), scale = TRUE,
 #'                                 linear.output = TRUE)
 #'
@@ -81,7 +83,8 @@ NeuralNetwork <- function(f, data, layers, scale = FALSE,
 }
 
 
-#' Returns the data with added factor columns and changed formula
+#' Returns the data with added factor columns, changed formula and all
+#' independent variables.
 #'
 #' @keywords internal
 create_factor_specification <- function(data, dependent, independent, f){
@@ -184,12 +187,14 @@ fit_neural_network_numeric <- function(f, data, layers, ...){
 #' @keywords internal
 fit_neural_network_categorical <- function(f, data, layers, dependent,
                                            independent, ...){
+    # expand categorical dependent variable into dummy variables
     if (!(all(levels(data[[dependent]]) %in% colnames(data)))) {
         identifier <- class.ind(data[[dependent]])
         rownames(identifier) <- rownames(data)
         data <- cbind(data, identifier)
     }
 
+    # recreate model formula with dummy variables
     f <- as.formula(paste(paste(
         levels(data[[dependent]]), collapse = " + "), "~",
         paste(independent, collapse = "+"), sep = " "))

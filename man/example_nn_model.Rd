@@ -7,7 +7,7 @@
 example_nn_model(type)
 }
 \arguments{
-\item{type}{Either numerical, categorical or binary}
+\item{type}{String beeing either numerical, categorical or binary.}
 }
 \value{
 NeuralNetwork class

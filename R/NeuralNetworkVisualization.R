@@ -31,7 +31,7 @@ NULL
 #'
 #' }
 #'
-#' @param type Either numerical, categorical or binary
+#' @param type String beeing either numerical, categorical or binary.
 #'
 #' @name example_nn_model
 #' @export

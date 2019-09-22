@@ -13,8 +13,8 @@
 #'   'ggplotly' if plotly should be used.
 #' @param nrepetitions Number of samples used within bootstrap for confidence
 #'   intervals.
-#' @param parallel Boolean specifying if for multiple predictors selected the
-#'   plotting data creation should be parallelized.
+#' @param parallel Boolean specifying if for the bootstrap confidence interval
+#'   the plotting data creation should be parallelized.
 #' @param use_stored_data Boolean specifying if the stored data within a model
 #'   should be used. Raises an error if no stored data is available.
 #'
@@ -24,7 +24,7 @@
 #' \dontrun{
 #' # Example: Numeric
 #' library(MASS)
-#' neural_network <- NeuralNetwork(f = "medv ~ .", data = Boston,
+#' neural_network <- NeuralNetwork(f = medv ~ ., data = Boston,
 #'                                 layers = c(5, 3), scale = TRUE,
 #'                                 linear.output = TRUE)
 #'
@@ -39,7 +39,7 @@
 #'    Species ~ Sepal.Length + Sepal.Width + Petal.Length + Petal.Width,
 #'    data = iris, layers = c(10, 10), rep = 5, err.fct = "ce",
 #'    linear.output = FALSE, lifesign = "minimal", stepmax = 1000000,
-#'    threshold = 0.001, scale = F)
+#'    threshold = 0.001, scale = FALSE)
 #'
 #' plot_partial_dependencies(model, predictors = "Petal.Length")
 #' plot_partial_dependencies(model,
@@ -96,6 +96,9 @@ is_valid_probs <- function(probs){
     }
     if (sum(probs) != 1) {
         stop("The prediction interval probabilities have to add up to one!")
+    }
+    if (any(probs <= 0)) {
+        stop("The prediction interval probabilities have to be bigger than 0!")
     }
 }
 
